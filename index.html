@@ -2,15 +2,17 @@
 <html>
 
 <head>
-  <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="./css/normalize.css" />
+  <link rel="stylesheet" href="./css/styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Restaurant Reviews</title>
+
 </head>
 
 <body>
   <header>
     <nav>
-      <h1><a href="/">Restaurant Reviews</a></h1>
+      <h1><a href="./index.html">Restaurant Reviews</a></h1>
     </nav>
   </header>
 
@@ -35,8 +37,16 @@
   <script type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
   <script type="application/javascript" charset="utf-8" src="js/main.js"></script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDkElR1xBQw822KmuHWYhDee62bHvhutgA&libraries=places&callback=initMap"></script>
-
-
+    <script>
+      //Animations
+      let ul = document.body.querySelector("#restaurants-list");
+      let restaurants_cont_restaurant = ul.querySelectorAll("li");
+      restaurants_cont_restaurant.addEventListener("hover", function()
+      {
+          alert("ciao");
+      });
+      
+</script>
   <footer id="footer">
     Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
   </footer>
