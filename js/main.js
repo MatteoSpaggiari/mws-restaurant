@@ -35,6 +35,8 @@ fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
         option.value = neighborhood;
         select.append(option);
     });
+    
+    
 }
 
 /**
@@ -136,13 +138,14 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 createRestaurantHTML = (restaurant) => {
     const li = document.createElement('li');
     
-    const cont_rest = document.createElement('div');
+    const cont_rest = document.createElement('article');
     cont_rest.className = 'cont-restaurant';
     li.append(cont_rest);
     
     const image = document.createElement('img');
     image.className = 'restaurant-img';
     image.src = DBHelper.imageUrlForRestaurant(restaurant);
+    image.alt = "Name: "+restaurant.name+"; Neighborhood: "+restaurant.neighborhood+"; Address: "+restaurant.address;    
     cont_rest.append(image);
 
     const name = document.createElement('h1');
@@ -166,6 +169,7 @@ createRestaurantHTML = (restaurant) => {
     const more = document.createElement('a');
     more.className = 'button';
     more.innerHTML = 'View Details';
+    more.setAttribute("aria-label","Name: "+restaurant.name+"; Neighborhood: "+restaurant.neighborhood+"; Address: "+restaurant.address);
     more.href = DBHelper.urlForRestaurant(restaurant);
     cont_more.append(more)
     cont_rest.append(cont_more)
@@ -186,4 +190,3 @@ addMarkersToMap = (restaurants = self.restaurants) => {
         self.markers.push(marker);
     });
 }
-

@@ -1,3 +1,4 @@
+@charset "utf-8";
 /*! normalize.css v7.0.0 | MIT License | github.com/jonathantneal/normalize.css */
 
 /* Document
@@ -8,6 +9,11 @@
  * 2. Prevent adjustments of font size after orientation changes in
  *    IE on Windows Phone and in iOS.
  */
+
+*
+{
+    outline: none;
+}
 
 html {
   line-height: 1.15; /* 1 */
