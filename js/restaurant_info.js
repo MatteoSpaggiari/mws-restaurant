@@ -49,25 +49,30 @@ fetchRestaurantFromURL = (callback) => {
  * Create restaurant HTML and add it to the webpage
  */
 fillRestaurantHTML = (restaurant = self.restaurant) => {
-  const name = document.getElementById('restaurant-name');
-  name.innerHTML = restaurant.name;
+    const name = document.getElementById('restaurant-name');
+    name.innerHTML = restaurant.name;
+    
+    //Modify the title tag of the page by adding the restaurant name
+    const title = document.title;
+    document.title = `${title} - ${restaurant.name}`;
+    
+    const address = document.getElementById('restaurant-address');
+    address.innerHTML = restaurant.address;
 
-  const address = document.getElementById('restaurant-address');
-  address.innerHTML = restaurant.address;
+    const image = document.getElementById('restaurant-img');
+    image.className = 'restaurant-img';
+    image.alt = restaurant.description_image;
+    image.src = `${DBHelper.imageUrlForRestaurant(restaurant)}${restaurant.photograph_maxw}`;
 
-  const image = document.getElementById('restaurant-img');
-  image.className = 'restaurant-img';
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+    const cuisine = document.getElementById('restaurant-cuisine');
+    cuisine.innerHTML = restaurant.cuisine_type;
 
-  const cuisine = document.getElementById('restaurant-cuisine');
-  cuisine.innerHTML = restaurant.cuisine_type;
-
-  // fill operating hours
-  if (restaurant.operating_hours) {
-    fillRestaurantHoursHTML();
-  }
-  // fill reviews
-  fillReviewsHTML();
+    // fill operating hours
+    if (restaurant.operating_hours) {
+      fillRestaurantHoursHTML();
+    }
+    // fill reviews
+    fillReviewsHTML();
 }
 
 /**
@@ -121,7 +126,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 /**
  * Create review HTML and add it to the webpage.
  */
-createReviewHTML = (review) => {
+createReviewHTML = (review) => {    
     const li = document.createElement('li');
     const article = document.createElement('article');
     article.className = "cont-review";
@@ -182,3 +187,16 @@ getParameterByName = (name, url) => {
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
+
+/**
+ * For those who use the keyboard to navigate, they can skip to the main content "Restaurant Info"
+ */
+const skip_link = document.getElementById("skip-link");
+const restaurant_focus = document.getElementById("restaurant-container");
+skip_link.addEventListener("keydown",function(event){
+    event.preventDefault();
+    const key = event.charCode || event.keyCode;
+    if(key === 32 || key === 13) {
+        restaurant_focus.focus();
+    }
+});

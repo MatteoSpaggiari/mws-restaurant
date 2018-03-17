@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <!-- Beginning head -->
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="">
-        <meta name="keywords" content="">
+        <meta name="description" content="Choose the restaurant that best suits you, here you can find information and reviews of thousands of restaurants.">
+        <meta name="keywords" content="Restaurants review, Restaurants, Reviews, Restaurants Info">
         <!-- Normalize.css for better cross-browser consistency -->
         <link rel="stylesheet" href="./css/normalize.css">
         <!-- Main CSS file -->
@@ -15,6 +15,8 @@
     <!-- End head -->
     <!-- Beginning body -->
     <body>
+        <!-- Skip Link -->
+        <a href="#restaurants" id="skip-link" class="skip-link">Skip the map and go to the filter</a>
         <!-- Beginning header -->
         <header>
             <!-- Beginning nav -->
@@ -31,13 +33,15 @@
                 <div id="map" class="map"></div>
             </section>
             <!-- Beginning restaurants -->
-            <section id="restaurants" class="restaurants">
+            <section id="restaurants" class="restaurants" tabindex="-1">
                 <div class="filter-options">
                     <h2>Filter Results</h2>
-                    <select id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()">
+                    <span id="neighborhoods-select-label" class="label-hidden" hidden>Choose a neighborhood</span>
+                    <select id="neighborhoods-select" name="neighborhoods" aria-labelledby="neighborhoods-select-label">
                         <option value="all">All Neighborhoods</option>
                     </select>
-                    <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()">
+                    <span id="cuisines-select-label" class="label-hidden" hidden>Choose a cuisines</span>
+                    <select id="cuisines-select" name="cuisines" aria-labelledby="cuisines-select-label">
                         <option value="all">All Cuisines</option>
                     </select>
                 </div>
@@ -48,7 +52,7 @@
         <!-- End main -->
         <!-- Beginning footer -->
         <footer id="footer" class="footer">
-            Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
+            Copyright (c) 2017 <a href="./index.html"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
         </footer>
         <!-- End footer -->
         <!-- Beginning scripts -->

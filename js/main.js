@@ -142,11 +142,16 @@ createRestaurantHTML = (restaurant) => {
     cont_rest.className = 'cont-restaurant';
     li.append(cont_rest);
     
+    const picture = document.createElement('picture');
+    const source = document.createElement('source');
+    source.srcset = `${DBHelper.imageUrlForRestaurant(restaurant)}${restaurant.photograph_1x} 1x, ${DBHelper.imageUrlForRestaurant(restaurant)}${restaurant.photograph_2x} 2x`;
+    picture.append(source);
     const image = document.createElement('img');
     image.className = 'restaurant-img';
-    image.src = DBHelper.imageUrlForRestaurant(restaurant);
-    image.alt = "Name: "+restaurant.name+"; Neighborhood: "+restaurant.neighborhood+"; Address: "+restaurant.address;    
-    cont_rest.append(image);
+    image.src = `${DBHelper.imageUrlForRestaurant(restaurant)}${restaurant.photograph_maxw}`;
+    image.alt = restaurant.description_image;    
+    picture.append(image);
+    cont_rest.append(picture);
 
     const name = document.createElement('h1');
     name.innerHTML = restaurant.name;
@@ -169,7 +174,7 @@ createRestaurantHTML = (restaurant) => {
     const more = document.createElement('a');
     more.className = 'button';
     more.innerHTML = 'View Details';
-    more.setAttribute("aria-label","Name: "+restaurant.name+"; Neighborhood: "+restaurant.neighborhood+"; Address: "+restaurant.address);
+    more.setAttribute("aria-label","Name: "+restaurant.name+"; Neighborhood: "+restaurant.neighborhood);
     more.href = DBHelper.urlForRestaurant(restaurant);
     cont_more.append(more)
     cont_rest.append(cont_more)
@@ -187,6 +192,56 @@ addMarkersToMap = (restaurants = self.restaurants) => {
         google.maps.event.addListener(marker, 'click', () => {
             window.location.href = marker.url
         });
+        google.maps.event.addListener(marker, 'focus', () => {
+            alert("ciao");
+            window.location.href = marker.url
+        });
         self.markers.push(marker);
     });
 }
+
+/**
+ * Add event 'change' on the select of the filter
+ */
+const neighborhoods_select = document.getElementById('neighborhoods-select');
+neighborhoods_select.addEventListener("change",function(){updateRestaurants();});
+const cuisines_select = document.getElementById('cuisines-select');
+cuisines_select.addEventListener("change",function(){updateRestaurants();});
+
+/**
+ * Make the restaurant information visible only when there is a focus on the link "view details"
+ */
+window.addEventListener("keydown", function(event) {
+    const windowWidth = window.innerWidth;
+    if(windowWidth < 1060) {
+        const key = event.charCode || event.keyCode;
+        if(key === 9) //Only when the key pressed is tab
+        {
+            const buttons = document.getElementsByClassName("button");
+            for(let i = 0; i < buttons.length;i++)
+            {
+                buttons[i].addEventListener("focus",function(event)
+                {
+                    buttons[i].parentElement.previousSibling.classList.add("visible");
+                });
+                buttons[i].addEventListener("blur",function(event)
+                {
+                    buttons[i].parentElement.previousSibling.classList.remove("visible");
+                });
+            }
+        }
+    }
+});
+
+/**
+ * For those who use the keyboard to navigate, they can skip to the main content "Filter and Restaurant Tabs"
+ */
+const skip_link = document.getElementById("skip-link");
+const restaurant_focus = document.getElementById("restaurants");
+skip_link.addEventListener("keydown",function(event){
+    event.preventDefault();
+    const key = event.charCode || event.keyCode;
+    if(key === 32 || key === 13) {
+        restaurant_focus.focus();
+    }
+});

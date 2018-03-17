@@ -1,11 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <!-- Beginning head -->
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="">
-        <meta name="keywords" content="">
         <!-- Normalize.css for better cross-browser consistency -->
         <link rel="stylesheet" href="./css/normalize.css">
         <!-- Main CSS file -->
@@ -15,6 +13,8 @@
     <!-- End head -->
     <!-- Beginning body -->
     <body class="inside">
+        <!-- Skip Link -->
+        <a href="#restaurant-container" id="skip-link" class="skip-link">Skip the map and go to restaurant details</a>
         <!-- Beginning header -->
         <header>
             <!-- Beginning nav -->
@@ -39,9 +39,11 @@
                 </section>
                 <!-- End map -->
                 <!-- Beginning restaurant -->
-                <section id="restaurant-container" class="restaurant-container">
+                <section id="restaurant-container" class="restaurant-container" tabindex="-1">
                     <h1 id="restaurant-name" class="restaurant-name"></h1>
-                    <img id="restaurant-img" class="restaurant-img" alt="Restaurant image">
+                    <figure>
+                        <img id="restaurant-img" class="restaurant-img" alt="Restaurant image">
+                    </figure>
                     <p id="restaurant-cuisine" class="restaurant-cuisine"></p>
                     <p id="restaurant-address" class="restaurant-address"></p>
                     <table id="restaurant-hours" class="restaurant-hours"></table>
@@ -58,7 +60,7 @@
         <!-- End main -->
         <!-- Beginning footer -->
         <footer id="footer" class="footer">
-              Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
+              Copyright (c) 2017 <a href="./index.html"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
         </footer>
         <!-- End footer -->
         <!-- Beginning scripts -->
