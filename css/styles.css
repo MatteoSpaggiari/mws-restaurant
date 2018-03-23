@@ -519,6 +519,26 @@ figure {
     margin: 0;
 }
 
+/* Service Worker */
+.service-worker {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0,0,0,0.9);
+    z-index: 1000;
+}
+.button-sw {
+    background: transparent;
+    border: none;
+    color: #fff;
+    text-transform: uppercase;
+    padding: 1.5rem;
+    cursor: pointer;
+}
+#dismiss {
+   color: #f00; 
+}
+
 @media screen and (min-width: 1060px) {
     nav {
         height: 70px;
