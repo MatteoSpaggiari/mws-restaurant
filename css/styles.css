@@ -352,11 +352,12 @@ nav h1 a:hover, nav h1 a:focus, nav h1 a:active {
     left: 0;
     padding: 8px;
     z-index: 100;
-    background-color: #df8e01;
+    background-color: #f18200;
     border-radius: 0 0 5px 0;
     color: #fff !important;
     text-decoration: none;
     text-transform: uppercase;
+    text-shadow: 2px 2px 1px #111;
 }
 .skip-link:focus
 {

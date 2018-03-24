@@ -1,7 +1,4 @@
-/**
- * Declare the cache variables
- */
-const staticCacheName = 'restaurant-reviews-v27';
+const staticCacheName = 'restaurant-reviews-v46';
 const contentImgsCache = 'restaurant-reviews-content-imgs';
 const contentRestaurantCache = 'restaurant-reviews-content-restaurant';
 const allCaches = [
@@ -62,26 +59,26 @@ self.addEventListener('activate', function(event) {
  */
 self.addEventListener('fetch', function(event) {
   const requestUrl = new URL(event.request.url);
-  
+
   if(requestUrl.origin === location.origin) {
-    if (requestUrl.pathname.startsWith('/mws-restaurant/img/')) {
+    if (requestUrl.pathname.startsWith('/img/')) {
       event.respondWith(servePhoto(event.request));
       return;
     }
   }
 
   if(requestUrl.origin === location.origin) {
-    if (requestUrl.pathname.startsWith('/mws-restaurant/restaurant.html')) {
+    if (requestUrl.pathname.startsWith('/restaurant.html')) {
       event.respondWith(serveRestaurant(event.request));
       return;
     }
   }
 
-  event.respondWith(
-    caches.match(event.request).then(function(response) {
-      return response || fetch(event.request);
-    })
-  );
+    event.respondWith(
+      caches.match(event.request).then(function(response) {
+        return response || fetch(event.request);
+      })
+    );
 });
 
 function servePhoto(request) {
