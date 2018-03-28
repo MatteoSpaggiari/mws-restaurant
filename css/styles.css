@@ -110,14 +110,19 @@ section {
 /* ====================== Navigation ====================== */
 nav {
     width: 100%;
-    height: 60px;
-    line-height: 60px;
+    height: auto;
+    line-height: 2rem;
     background-color: #444;
-    text-align:center;
+    text-align: center;
+    padding: 0;
+}
+.inside nav {
+    padding: 0;
 }
 nav h1 {
     margin: auto;
     font-size: 1.5rem;
+    padding: 0.8rem 0;
 }
 
 nav h1 a {
@@ -159,7 +164,8 @@ nav h1 a:hover, nav h1 a:focus, nav h1 a:active {
     display: inline-block;
     color: #003f79;
     text-decoration: none;
-    padding: 24px 0;
+    padding: 20px 0;
+    min-height: 0;
 }
 
 /* Add a color on mouse-over */
@@ -269,7 +275,6 @@ nav h1 a:hover, nav h1 a:focus, nav h1 a:active {
 .restaurants-list li .restaurant-info.visible {
     opacity: 1;
 }
-
 .restaurants-list .restaurant-img {
     background-color: transparent;
     position: absolute;
@@ -312,7 +317,6 @@ nav h1 a:hover, nav h1 a:focus, nav h1 a:active {
     text-align: center;
     z-index: 4;
 }
-
 .restaurants-list li a {
     background-color: orange;
     border: none;
@@ -334,7 +338,6 @@ nav h1 a:hover, nav h1 a:focus, nav h1 a:active {
     transition: all 0.4s ease 0s;
     text-shadow: 2px 2px 1px #111;
 }
-
 .restaurants-list li a:hover,
 .restaurants-list li a:focus,
 .restaurants-list li a:active {
@@ -344,11 +347,10 @@ nav h1 a:hover, nav h1 a:focus, nav h1 a:active {
     font-weight: bold;
     text-shadow: 2px 2px 1px #111;
 }
-
 .skip-link
 {
     position: absolute;
-    top: -40px;
+    top: -1000px;
     left: 0;
     padding: 8px;
     z-index: 100;
@@ -474,10 +476,11 @@ nav h1 a:hover, nav h1 a:focus, nav h1 a:active {
     padding: 6px 5px;
     color: #666;
     text-align: left;
-    width: 50%;
+    width: auto;
 }
 .restaurant-hours tr td:last-child {
     text-align: right;
+    width: 170px;
 }
 .cont-review header {
     position: relative;
@@ -519,6 +522,12 @@ nav h1 a:hover, nav h1 a:focus, nav h1 a:active {
 figure {
     margin: 0;
 }
+.media-reviews {
+    text-align: left;
+}
+.hours-summary {
+    display: none;
+}
 
 /* Service Worker */
 .service-worker {
@@ -541,10 +550,6 @@ figure {
 }
 
 @media screen and (min-width: 1060px) {
-    nav {
-        height: 70px;
-        line-height: 70px;
-    }
     nav h1 {
         font-size: 2.4rem;
     }
@@ -686,5 +691,11 @@ figure {
         position: relative;
         order: 2;
         border-left: 1px solid #fff;
+    }
+}
+
+@media screen and (min-width: 600px) and (max-width:800px) {
+    .restaurant-hours tr td:last-child {
+        width: 90%;
     }
 }

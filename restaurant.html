@@ -20,39 +20,41 @@
             <!-- Beginning nav -->
             <nav>
                 <h1><a href="./index.html">Restaurant Reviews</a></h1>
+                <!-- Beginning breadcrumb -->
+                <ol id="breadcrumb" class="breadcrumb">
+                    <li><a href="./index.html">Home</a></li>
+                <!-- End breadcrumb -->
+                </ol>
             </nav>
-            <!-- Beginning breadcrumb -->
-            <ul id="breadcrumb" class="breadcrumb">
-                <li><a href="./index.html">Home</a></li>
-            </ul>
-            <!-- End breadcrumb -->
             <!-- End nav -->
         </header>
         <!-- End header -->
         <!-- Beginning main -->
         <main id="main-content" class="main-content">
             <!-- Beginning map-restaurant -->
-            <section id="map-restaurant-container" class="map-restaurant-container">
+            <section id="map-restaurant-container" class="map-restaurant-container" role="main">
                 <!-- Beginning map -->
-                <section id="map-container" class="map-container">
+                <section id="map-container" class="map-container" role="complementary">
                     <div id="map" class="map"></div>
                 </section>
                 <!-- End map -->
                 <!-- Beginning restaurant -->
-                <section id="restaurant-container" class="restaurant-container" tabindex="-1">
+                <section id="restaurant-container" class="restaurant-container" role="contentinfo" aria-labelledby="restaurant-name" tabindex="-1">
                     <h1 id="restaurant-name" class="restaurant-name"></h1>
                     <figure>
                         <img id="restaurant-img" class="restaurant-img" alt="Restaurant image">
                     </figure>
-                    <p id="restaurant-cuisine" class="restaurant-cuisine"></p>
-                    <p id="restaurant-address" class="restaurant-address"></p>
-                    <table id="restaurant-hours" class="restaurant-hours"></table>
+                    <p id="restaurant-cuisine" class="restaurant-cuisine" tabindex="0"></p>
+                    <p id="restaurant-address" class="restaurant-address" tabindex="0"></p>
+                    <table id="restaurant-hours" class="restaurant-hours" tabindex="0" aria-labelledby="hours-summary"></table>
+                    <p id="hours-summary" class="hours-summary" hidden aria-hidden="false"></p>
+                    <p id="media-reviews" class="media-reviews" tabindex="0"></p>
                 </section>
                 <!-- End restaurant -->
             </section>
             <!-- End map-restaurant -->
             <!-- Beginning reviews -->
-            <section id="reviews-container" class="reviews-container">
+            <section id="reviews-container" class="reviews-container" role="complementary">
                 <ul id="reviews-list" class="reviews-list"></ul>
             </section>
             <!-- End reviews -->

@@ -49,6 +49,7 @@ fetchRestaurantFromURL = (callback) => {
  * Create restaurant HTML and add it to the webpage
  */
 fillRestaurantHTML = (restaurant = self.restaurant) => {
+    
     const name = document.getElementById('restaurant-name');
     name.innerHTML = restaurant.name;
     
@@ -58,21 +59,34 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
     
     const address = document.getElementById('restaurant-address');
     address.innerHTML = restaurant.address;
+    address.setAttribute("aria-label","Address: "+restaurant.address);
 
     const image = document.getElementById('restaurant-img');
     image.className = 'restaurant-img';
-    image.alt = restaurant.description_image;
+    image.alt = `Image of ${restaurant.name}`;
     image.src = `${DBHelper.imageUrlForRestaurant(restaurant)}${restaurant.photograph_maxw}`;
 
     const cuisine = document.getElementById('restaurant-cuisine');
     cuisine.innerHTML = restaurant.cuisine_type;
+    cuisine.setAttribute("aria-label","Cuisine: "+restaurant.cuisine_type);
 
     // fill operating hours
     if (restaurant.operating_hours) {
       fillRestaurantHoursHTML();
     }
+    
+    // fill Media Reviews
+    const mediaReviews = document.getElementById('media-reviews');
+    mediaReviews.innerHTML = "<em>Media reviews: "+calcMediaReviews()+"</em>";
+    mediaReviews.setAttribute("aria-label","Media reviews: "+calcMediaReviews());
+    
+    
     // fill reviews
     fillReviewsHTML();
+    
+    // fill Summary Opening Times
+    fillRestaurantHoursSummaryHTML();
+
 };
 
 /**
@@ -102,6 +116,38 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 };
 
 /**
+ * Create restaurant summary opening times
+ */
+fillRestaurantHoursSummaryHTML = (operatingHours = self.restaurant.operating_hours) => {
+    const hours_summary = document.getElementById('hours-summary');
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    let string = "Opening time: ";
+    let i = 0;
+    for (let key in operatingHours) {
+        if(i == 0) {
+            string += days[i];
+            if(operatingHours[days[i+1]] != operatingHours[days[i]]) {
+                string += " "+operatingHours[days[i]]; 
+            }
+        } else {
+            if(operatingHours[days[i]] == operatingHours[days[i-1]]) {
+                string += ", "+days[i];
+                if(operatingHours[days[i+1]] != operatingHours[days[i]]) {
+                    string += " "+operatingHours[days[i]]; 
+                }
+            } else {
+                string += "; "+days[i];
+                if(operatingHours[days[i+1]] != operatingHours[days[i]]) {
+                    string += " "+operatingHours[days[i]]; 
+                }
+            }
+        }
+        i++;
+    }
+    hours_summary.innerHTML = string;
+};
+
+/**
  * Create all reviews HTML and add them to the webpage.
  */
 fillReviewsHTML = (reviews = self.restaurant.reviews) => {
@@ -126,7 +172,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 /**
  * Create review HTML and add it to the webpage.
  */
-createReviewHTML = (review) => {    
+createReviewHTML = (review) => {
     const li = document.createElement('li');
     const article = document.createElement('article');
     article.className = "cont-review";
@@ -160,6 +206,25 @@ createReviewHTML = (review) => {
     div_cont.appendChild(comments);
 
     return li;
+};
+
+/**
+ * Average calculation reviews
+ */
+calcMediaReviews = (reviews = self.restaurant.reviews) => {
+    if(reviews) {
+        let i;
+        let sum = 0;
+        let media = 0;
+        let num_reviews = reviews.length;
+        for(i = 0; i < num_reviews; i++) {
+            sum = sum + reviews[i].rating;
+        }
+        media = sum / num_reviews;
+        media = media > 0 ? media.toFixed(2) : "No reviews available";
+        return media;
+    }
+    return "No reviews available";
 };
 
 /**
