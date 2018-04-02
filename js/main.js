@@ -174,10 +174,43 @@ createRestaurantHTML = (restaurant) => {
     more.innerHTML = 'View Details';
     more.setAttribute("aria-label","Name: "+restaurant.name+"; Neighborhood: "+restaurant.neighborhood);
     more.href = DBHelper.urlForRestaurant(restaurant);
-    cont_more.append(more)
-    cont_rest.append(cont_more)
+    cont_more.append(more);
+    cont_rest.append(cont_more);
 
     return li;
+};
+
+/**
+ * Average calculation reviews
+ */
+calcMediaReviews = (reviews = self.restaurant.reviews) => {
+    if(reviews) {
+        let i;
+        let sum = 0;
+        let media = 0;
+        let num_reviews = reviews.length;
+        for(i = 0; i < num_reviews; i++) {
+            sum = sum + reviews[i].rating;
+        }
+        media = sum / num_reviews;
+        media = media > 0 ? media.toFixed(2) : "";
+        return media;
+    }
+    return "";
+};
+
+/**
+ * Find the opening time of the current day
+ */
+findRestaurantCurrentDayOpeningTimeHTML = (operatingHours = self.restaurant.operating_hours) => {
+    //Current Day (Today)
+    const today = new Date().toDateString().split(" ")[0];
+    for (let key in operatingHours) {
+        if(key.substr(0, 3) == today)
+        {
+            return operatingHours[key];
+        }
+    }
 };
 
 /**
@@ -187,8 +220,22 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     restaurants.forEach(restaurant => {
         // Add marker to the map
         const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
+        //Calc Media Review 
+        const media_review = calcMediaReviews(restaurant.reviews);
+        // Restaurant Info
+        const restaurant_info = '<h2>'+restaurant.name+'</h2><p><strong>Cuisine: </strong><em>'+restaurant.cuisine_type+'</em></p>'+(media_review != "" ? '<p><strong>Media Review: </strong><em>'+media_review+'</em></p>' : '')+'<p><strong>Today open: </strong><em>'+findRestaurantCurrentDayOpeningTimeHTML(restaurant.operating_hours)+'</em></p>';
+        // Add InfoWindow to Marker with Cuisine Type and Media Review
+        const infowindow = new google.maps.InfoWindow({
+            content: restaurant_info
+        });
+        marker.addListener('mouseover', function() {
+            infowindow.open(map, marker);
+        });
+        marker.addListener('mouseout', function() {
+            infowindow.close();
+        });
         google.maps.event.addListener(marker, 'click', () => {
-            window.location.href = marker.url
+            window.location.href = marker.url;
         });
         self.markers.push(marker);
     });
@@ -233,90 +280,8 @@ window.addEventListener("keydown", function(event) {
 const skip_link = document.getElementById("skip-link");
 const restaurant_focus = document.getElementById("restaurants");
 skip_link.addEventListener("keydown",function(event){
-    event.preventDefault();
     const key = event.charCode || event.keyCode;
     if(key === 32 || key === 13) {
         restaurant_focus.focus();
     }
 });
-
-/**
- * Service Worker
- */
-class OffLineFirst {
-    registerServiceWorker() {
-        if (!navigator.serviceWorker) return;
-
-        const offLineFirst = this;
-        navigator.serviceWorker.register('sw.js').then(function(reg) {
-            if (!navigator.serviceWorker.controller) {
-              return;
-            }
-
-            if (reg.waiting) {
-                offLineFirst.updateReady(reg.waiting);
-              return;
-            }
-
-            if (reg.installing) {
-                offLineFirst.trackInstalling(reg.installing);
-              return;
-            }
-
-            reg.addEventListener('updatefound', function() {
-                offLineFirst.trackInstalling(reg.installing);
-            });
-        });
-
-        // Ensure refresh is only called once.
-        // This works around a bug in "force update on reload".
-        let refreshing;
-        navigator.serviceWorker.addEventListener('controllerchange', function() {
-            if (refreshing) return;
-            window.location.reload();
-            refreshing = true;
-        });
-    }
-
-    trackInstalling(worker) {
-        const offLineFirst = this;
-        worker.addEventListener('statechange', function() {
-            if (worker.state == 'installed') {
-              offLineFirst.updateReady(worker);
-            }
-        });
-    }
-
-    updateReady(worker) {
-        const div = document.createElement('div');
-        div.id = "service-worker";
-        div.className = "service-worker";
-
-        const refresh = document.createElement('button');
-        refresh.id = "refresh";
-        refresh.type = "button";
-        refresh.className = "button-sw";
-        refresh.innerHTML = "refresh";
-        div.append(refresh);
-
-        const dismiss = document.createElement('button');
-        dismiss.id = "dismiss";
-        dismiss.type = "button";
-        dismiss.className = "button-sw";
-        dismiss.innerHTML = "dismiss";
-        div.append(dismiss);
-
-        document.body.append(div);
-
-        refresh.addEventListener("click",function(event) {
-            worker.postMessage({action: 'skipWaiting'});
-        });
-
-        dismiss.addEventListener("click",function(event){
-            div.style.display = "none";
-        });
-    };
-}
-
-const offLine = new OffLineFirst();
-offLine.registerServiceWorker();

@@ -15,7 +15,7 @@ window.initMap = () => {
                 scrollwheel: false
             });
             fillBreadcrumb();
-            DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
+            DBHelper.mapMarkerForRestaurantInfo(self.restaurant, self.map);
       }
     });
 };
@@ -259,7 +259,6 @@ getParameterByName = (name, url) => {
 const skip_link = document.getElementById("skip-link");
 const restaurant_focus = document.getElementById("restaurant-container");
 skip_link.addEventListener("keydown",function(event){
-    event.preventDefault();
     const key = event.charCode || event.keyCode;
     if(key === 32 || key === 13) {
         restaurant_focus.focus();

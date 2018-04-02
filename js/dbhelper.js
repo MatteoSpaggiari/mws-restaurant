@@ -154,13 +154,33 @@ class DBHelper {
     }
 
     /**
-     * Map marker for a restaurant.
+     * Map marker for a restaurant (index.html)
      */
     static mapMarkerForRestaurant(restaurant, map) {
+        //Calc Media Review 
+        const media_review = calcMediaReviews(restaurant.reviews);
+        //Info Restaurant
+        const restaurant_info = restaurant.name+', Cuisine: '+restaurant.cuisine_type+''+(media_review != "" ? ', Media Review: '+media_review : '')+', Today open: '+findRestaurantCurrentDayOpeningTimeHTML(restaurant.operating_hours);        
+       
         const marker = new google.maps.Marker({
             position: restaurant.latlng,
-            title: restaurant.name,
             url: DBHelper.urlForRestaurant(restaurant),
+            title: restaurant_info,
+            map: map,
+            animation: google.maps.Animation.DROP
+        });
+        return marker;
+    }
+    
+    /**
+     * Map marker for a restaurant (restaurant.html)
+     */
+    static mapMarkerForRestaurantInfo(restaurant, map) {
+        
+        const marker = new google.maps.Marker({
+            position: restaurant.latlng,
+            url: DBHelper.urlForRestaurant(restaurant),
+            title: restaurant.name,
             map: map,
             animation: google.maps.Animation.DROP
         });

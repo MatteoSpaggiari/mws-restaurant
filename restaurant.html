@@ -34,7 +34,7 @@
             <!-- Beginning map-restaurant -->
             <section id="map-restaurant-container" class="map-restaurant-container" role="main">
                 <!-- Beginning map -->
-                <section id="map-container" class="map-container" role="complementary">
+                <section id="map-container" class="map-container" role="application" aria-label="Google Maps" aria-hidden="true">
                     <div id="map" class="map"></div>
                 </section>
                 <!-- End map -->
@@ -67,9 +67,11 @@
         <!-- End footer -->
         <!-- Beginning scripts -->
         <!-- Database helpers -->
-        <script type="text/javascript" src="js/dbhelper.js"></script>
+        <script type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
         <!-- Main javascript file -->
-        <script type="text/javascript" src="js/restaurant_info.js"></script>
+        <script type="application/javascript" charset="utf-8" src="js/restaurant_info.js"></script>
+        <!-- Offline first - Service Worker javascript file -->
+        <script type="application/javascript" charset="utf-8" src="js/offline_first.js"></script>
         <!-- Google Maps -->
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDkElR1xBQw822KmuHWYhDee62bHvhutgA&libraries=places&callback=initMap"></script>
         <!-- End scripts -->

@@ -29,8 +29,8 @@
         <!-- Beginning main -->
         <main id="main-content" class="main-content">
             <!-- Beginning map -->
-            <section id="map-container" class="map-container" role="complementary">
-                <div id="map" class="map"></div>
+            <section id="map-container" class="map-container" role="application" aria-label="Google Maps" tabindex="0">
+                <div id="map" class="map" aria-label="Restaurants"></div>
             </section>
             <!-- Beginning restaurants -->
             <section id="restaurants" class="restaurants" tabindex="-1" role="contentinfo">
@@ -60,6 +60,8 @@
         <script type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
         <!-- Main javascript file -->
         <script type="application/javascript" charset="utf-8" src="js/main.js"></script>
+        <!-- Offline first - Service Worker javascript file -->
+        <script type="application/javascript" charset="utf-8" src="js/offline_first.js"></script>
         <!-- Google Maps -->
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDkElR1xBQw822KmuHWYhDee62bHvhutgA&libraries=places&callback=initMap"></script>
         <!-- End scripts -->
