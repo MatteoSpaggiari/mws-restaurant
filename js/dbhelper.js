@@ -2,33 +2,33 @@
  * Common database helper functions.
  */
 class DBHelper {
-
   /**
    * Database URL.
    * Change this to restaurants.json file location on your server.
    */
     static get DATABASE_URL() {
-        const port = 8000 // Change this to your server port
-        return `http://localhost:${port}/data/restaurants.json`;
+        const port = 1337; // Change this to your server port
+        return `http://localhost:${port}/restaurants`;
     }
 
   /**
    * Fetch all restaurants.
    */
     static fetchRestaurants(callback) {
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', DBHelper.DATABASE_URL);
-        xhr.onload = () => {
-            if (xhr.status === 200) { // Got a success response from server!
-                const json = JSON.parse(xhr.responseText);
-                const restaurants = json.restaurants;
-                callback(null, restaurants);
-            } else { // Oops!. Got an error from server.
-                const error = (`Request failed. Returned status of ${xhr.status}`);
-                callback(error, null);
+        fetch(DBHelper.DATABASE_URL).then(function(response) {
+            if(response.ok) {
+                //If the response status is 200 I'll take it
+                return response.json();
+            } else {
+                //If the response status is different from 200 load the data from IDB
+                OffLineFirst.getValuesDatabase(callback);
             }
-        };
-        xhr.send();
+        }).then(function(restaurants) {
+            callback(null,restaurants);
+        }).catch(function() {
+            //If there is no line or there is a network error load the data from IDB
+            OffLineFirst.getValuesDatabase(callback);
+        });
     }
 
   /**
