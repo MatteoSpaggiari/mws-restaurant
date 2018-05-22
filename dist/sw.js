@@ -26,6 +26,8 @@ self.addEventListener('install', function(event) {
             'fonts/opensans-regular-webfont.ttf',
             'fonts/opensans-regular-webfont.woff',
             'js/all.js',
+            'img/icons/favicon.ico',
+            'img/icons/restaurants-review-192.png',
             'manifest.webmanifest'
         ]
       );
@@ -58,17 +60,17 @@ self.addEventListener('fetch', function(event) {
     const requestUrl = new URL(event.request.url);
 
     if(requestUrl.origin === location.origin) {
+        
         if (requestUrl.pathname.startsWith('/img/')) {
             event.respondWith(servePhoto(event.request));
             return;
         }
-    }
 
-    if(requestUrl.origin === location.origin) {
         if (requestUrl.pathname.startsWith('/restaurant.html')) {
             event.respondWith(serveRestaurant(event.request));
             return;
         }
+        
     }
 
     event.respondWith(

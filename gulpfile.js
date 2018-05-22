@@ -46,7 +46,7 @@ gulp.task('styles', function(done) {
 });
 
 gulp.task('scripts', function(done) {
-    gulp.src('./js/**/*.js')
+    gulp.src('./js/*.js')
         .pipe(sourcemaps.init())
         .pipe(concat('all.js'))
         .pipe(sourcemaps.write())
@@ -56,7 +56,7 @@ gulp.task('scripts', function(done) {
 
 gulp.task('scripts-dist', function(done) {
     pump([
-        gulp.src('./js/**/*.js'),
+        gulp.src('./js/*.js'),
         sourcemaps.init(),
         concat('all.js'),
         uglify({ 

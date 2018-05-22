@@ -6,7 +6,7 @@
     "short_name": "RR2018",
     "orientation": "any",
     "display": "fullscreen",
-    "start_url": ".",
+    "start_url": "./index.html",
     "background_color": "#fdfdfd",
     "theme_color": "#fdfdfd",
     "description": "Choose the restaurant that best suits you, here you can find information and reviews of thousands of restaurants.",

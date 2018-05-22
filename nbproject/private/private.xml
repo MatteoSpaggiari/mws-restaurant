@@ -12,11 +12,15 @@
             <file>file:/C:/wamp64/www/mws-restaurant/restaurant.html</file>
             <file>file:/C:/wamp64/www/mws-restaurant/js/offline_first.js</file>
             <file>file:/C:/wamp64/www/mws-restaurant/dist/manifest.webmanifest</file>
-            <file>file:/C:/wamp64/www/mws-restaurant/manifest.json</file>
             <file>file:/C:/wamp64/www/mws-restaurant/dist/sw.js</file>
+            <file>file:/C:/wamp64/www/mws-restaurant/dist/robots.txt</file>
             <file>file:/C:/wamp64/www/mws-restaurant/sass/styles.scss</file>
+            <file>file:/C:/wamp64/www/mws-restaurant/dist/css/styles.css</file>
+            <file>file:/C:/wamp64/www/mws-restaurant/js/restaurant_info.js</file>
             <file>file:/C:/wamp64/www/mws-restaurant/js/dbhelper.js</file>
+            <file>file:/C:/wamp64/www/mws-restaurant/dist/js/polyfill/idb.js</file>
             <file>file:/C:/wamp64/www/mws-restaurant/data/restaurants.json</file>
+            <file>file:/C:/wamp64/www/mws-restaurant/dist/js/all.js</file>
         </group>
     </open-files>
 </project-private>

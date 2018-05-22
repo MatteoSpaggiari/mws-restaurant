@@ -2,6 +2,7 @@
 /* CSS Document */
 @font-face {
     font-family: "Headers";
+    font-display: fallback;
     src: url("../fonts/breeserif-regular-webfont.eot");
     src: url("../fonts/breeserif-regular-webfont.eot?#iefix") format("embedded-opentype"),
     url("../fonts/breeserif-regular-webfont.woff") format("woff"),
@@ -12,6 +13,7 @@
 }
 @font-face {
     font-family: "General";
+    font-display: fallback;
     src: url("../fonts/opensans-regular-webfont.eot");
     src: url("../fonts/opensans-regular-webfont.eot?#iefix") format("embedded-opentype"),
     url("../fonts/opensans-regular-webfont.woff") format("woff"),

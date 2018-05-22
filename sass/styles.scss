@@ -18,6 +18,7 @@ $textShadowButtonHover: 2px 2px 1px #333;
 /* CSS Document */
 @font-face {
     font-family: "Headers";
+    font-display: fallback;
     src: url("../fonts/breeserif-regular-webfont.eot");
     src: url("../fonts/breeserif-regular-webfont.eot?#iefix") format("embedded-opentype"),
     url("../fonts/breeserif-regular-webfont.woff") format("woff"),
@@ -28,6 +29,7 @@ $textShadowButtonHover: 2px 2px 1px #333;
 }
 @font-face {
     font-family: "General";
+    font-display: fallback;
     src: url("../fonts/opensans-regular-webfont.eot");
     src: url("../fonts/opensans-regular-webfont.eot?#iefix") format("embedded-opentype"),
     url("../fonts/opensans-regular-webfont.woff") format("woff"),
