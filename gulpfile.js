@@ -45,6 +45,19 @@ gulp.task('styles', function(done) {
     done();
 });
 
+gulp.task('styles-dist', function(done) {
+    gulp.src('./sass/**/*.scss')
+        .pipe(sass({
+            outputStyle: 'compressed'
+        }).on('error', sass.logError))
+        .pipe(autoprefixer({
+            browsers: ['last 2 versions']
+        }))
+        .pipe(gulp.dest('./dist/css'))
+        .pipe(browserSync.stream());
+    done();
+});
+
 gulp.task('scripts', function(done) {
     gulp.src('./js/*.js')
         .pipe(sourcemaps.init())
@@ -57,13 +70,11 @@ gulp.task('scripts', function(done) {
 gulp.task('scripts-dist', function(done) {
     pump([
         gulp.src('./js/*.js'),
-        sourcemaps.init(),
         concat('all.js'),
         uglify({ 
             mangle: false, 
             ecma: 6 
         }),
-        sourcemaps.write(),
         gulp.dest('./dist/js')
     ],
     done()
@@ -92,7 +103,7 @@ gulp.task('watch:copy-sw', function() {
 
 gulp.task('watch', gulp.series('copy-html','copy-images','styles','scripts','copy-sw', gulp.parallel('watch:styles','watch:scripts','watch:copy-html','watch:copy-images','watch:copy-sw')));
 
-gulp.task('dist', gulp.series('copy-html','copy-images','copy-sw','styles','scripts-dist', function(done) {
+gulp.task('dist', gulp.series('copy-html','copy-images','copy-sw','styles-dist','scripts-dist', function(done) {
     done(); 
 }));
 

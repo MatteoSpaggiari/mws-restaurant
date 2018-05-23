@@ -429,6 +429,7 @@ nav {
         width: 100%;
         text-align: center;
         border-radius: 3px;
+        box-shadow: 5px 5px 10px 0 #aaa;
     }
 }
 
@@ -445,6 +446,7 @@ nav {
     padding: 5px;
     border-radius: 3px;
     text-shadow: $textShadowHeader;
+    box-shadow: 5px 5px 10px 0 #aaa;
 }
 
 .restaurant-address {
@@ -459,12 +461,13 @@ nav {
     font-size: 0.9rem;
     font-weight: 300;
     letter-spacing: 5px;
-    margin: 0 0 20px;
+    margin: 8px 0 20px;
     padding: 2px 0;
     text-align: center;
     text-transform: uppercase;
     width: auto;
     border-radius: 3px;
+        box-shadow: 5px 5px 10px 0 #aaa;
 }
 
 .restaurant-container,
@@ -554,7 +557,7 @@ nav {
         padding: 0 20px;
         align-items: center;
         
-        h1 {
+        h3 {
             flex-grow: 11;
             margin: 0;
             padding: 0;

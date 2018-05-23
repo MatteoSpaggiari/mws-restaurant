@@ -182,7 +182,7 @@ if(location.pathname.indexOf("restaurant.html") !== -1) {
         const header = document.createElement('header');
         article.appendChild(header);
 
-        const name = document.createElement('h1');
+        const name = document.createElement('h3');
         name.className = "name-review";
         name.innerHTML = review.name;
         header.appendChild(name);
