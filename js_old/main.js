@@ -10,7 +10,7 @@ if(location.pathname.indexOf("restaurant.html") === -1) {
         fetchNeighborhoods();
         fetchCuisines();
     });
-
+    
     /**
      * Fetch all neighborhoods and set their HTML.
      */
@@ -67,6 +67,22 @@ if(location.pathname.indexOf("restaurant.html") === -1) {
     };
 
     /**
+     * Initialize Google map, called from HTML.
+     */
+    window.initMap = () => {
+        let loc = {
+            lat: 40.722216,
+            lng: -73.987501
+        };
+        self.map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 12,
+            center: loc,
+            scrollwheel: false
+        });
+        updateRestaurants();
+    };
+
+    /**
      * Update page and map for current restaurants.
      */
     updateRestaurants = () => {
@@ -88,23 +104,7 @@ if(location.pathname.indexOf("restaurant.html") === -1) {
             }
         });
     };
-    
-        /**
-     * Initialize Google map, called from HTML.
-     */
-    window.initMap = () => {
-        let loc = {
-            lat: 40.722216,
-            lng: -73.987501
-        };
-        self.map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 12,
-            center: loc,
-            scrollwheel: false
-        });
-        updateRestaurants();
-    };
-    
+
     /**
      * Clear current restaurants, their HTML and remove their map markers.
      */
@@ -151,7 +151,7 @@ if(location.pathname.indexOf("restaurant.html") === -1) {
         image.alt = `Image of ${restaurant.name}`;    
         picture.append(image);
         cont_rest.append(picture);
-        
+
         const name = document.createElement('h1');
         name.innerHTML = restaurant.name;
         cont_rest.append(name);
@@ -180,7 +180,26 @@ if(location.pathname.indexOf("restaurant.html") === -1) {
 
         return li;
     };
-    
+
+    /**
+     * Average calculation reviews
+     */
+    calcMediaReviews = (reviews = self.restaurant.reviews) => {
+        if(reviews) {
+            let i;
+            let sum = 0;
+            let media = 0;
+            let num_reviews = reviews.length;
+            for(i = 0; i < num_reviews; i++) {
+                sum = sum + reviews[i].rating;
+            }
+            media = sum / num_reviews;
+            media = media > 0 ? media.toFixed(2) : "";
+            return media;
+        }
+        return "";
+    };
+
     /**
      * Find the opening time of the current day
      */
@@ -202,8 +221,10 @@ if(location.pathname.indexOf("restaurant.html") === -1) {
         restaurants.forEach(restaurant => {
             // Add marker to the map
             const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
+            //Calc Media Review 
+            const media_review = calcMediaReviews(restaurant.reviews);
             // Restaurant Info
-            const restaurant_info = '<h2>'+restaurant.name+'</h2><p><strong>Cuisine: </strong><em>'+restaurant.cuisine_type+'</em></p><p><strong>Today open: </strong><em>'+findRestaurantCurrentDayOpeningTimeHTML(restaurant.operating_hours)+'</em></p>';
+            const restaurant_info = '<h2>'+restaurant.name+'</h2><p><strong>Cuisine: </strong><em>'+restaurant.cuisine_type+'</em></p>'+(media_review != "" ? '<p><strong>Media Review: </strong><em>'+media_review+'</em></p>' : '')+'<p><strong>Today open: </strong><em>'+findRestaurantCurrentDayOpeningTimeHTML(restaurant.operating_hours)+'</em></p>';
             // Add InfoWindow to Marker with Cuisine Type and Media Review
             const infowindow = new google.maps.InfoWindow({
                 content: restaurant_info
@@ -220,6 +241,7 @@ if(location.pathname.indexOf("restaurant.html") === -1) {
             self.markers.push(marker);
         });
     };
+
     /**
      * Add event 'change' on the select of the filter
      */

@@ -29,7 +29,8 @@ self.addEventListener('install', function(event) {
             'js/all.js',
             'img/icons/favicon.ico',
             'img/icons/restaurants-review-192.png',
-            'manifest.webmanifest'
+            'manifest.webmanifest',
+            'ww.js'
         ]
       );
     })

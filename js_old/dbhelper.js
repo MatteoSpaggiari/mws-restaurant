@@ -312,29 +312,13 @@
 }());
 
 class DBHelper {
-    
-    /**
-    * Database URL Restaurants.
-    */
-    static RESTAURANTS_DATABASE_URL(id = null) {
+  /**
+   * Database URL.
+   * Change this to restaurants.json file location on your server.
+   */
+    static get DATABASE_URL() {
         const port = 1337; // Change this to your server port
-        if(id) {
-            return `http://localhost:${port}/restaurants/${id}`;
-        } else {
-            return `http://localhost:${port}/restaurants/`;
-        }
-    }
-    
-    /**
-    * Database URL Reviews.
-    */
-    static REVIEWS_DATABASE_URL(restaurant_id = null) {
-        const port = 1337; // Change this to your server port
-        if(restaurant_id) {
-            return `http://localhost:${port}/reviews/?restaurant_id=${restaurant_id}`;
-        } else {
-            return `http://localhost:${port}/reviews/`;
-        }
+        return `http://localhost:${port}/restaurants`;
     }
     
     /**
@@ -349,26 +333,18 @@ class DBHelper {
 
         return idb.open('restaurants-review', 1, function(upgradeDb) {
             let restaurantsStore;
-            let reviewsStore;
-            let reviewsOfflineStore;
             switch(upgradeDb.oldVersion) {
 		case 0:
-                    restaurantsStore = upgradeDb.createObjectStore('restaurants', {keyPath: 'id', autoIncrement: true});
-                case 1:
-                    reviewsStore = upgradeDb.createObjectStore('reviews', {keyPath: 'id', autoIncrement: true});
-                    reviewsStore.createIndex('restaurant_id','restaurant_id',{ unique: false });
-                case 2: 
-                    reviewsOfflineStore = upgradeDb.createObjectStore('reviews-offline', {keyPath: 'id', autoIncrement: true});
+                    restaurantsStore = upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
             }
         });
     }
     
     /**
-    * Static method used to insert / update data of the Restaurants obtained from the server in the Browser database (IDB)
+    * Static method used to insert / update data obtained from the server in the Browser database (IDB)
     */
-    static putValuesRestaurantsDatabase() {
-        //Add Restaurants Database
-        fetch(DBHelper.RESTAURANTS_DATABASE_URL()).then(function(response) {
+    static putValuesDatabase() {
+        fetch(DBHelper.DATABASE_URL).then(function(response) {
             if(response.ok) {
                 return response.json();
             } else {
@@ -385,9 +361,9 @@ class DBHelper {
                 };
                 return  tx.complete;
             }).then(function() {
-                console.log('Add restaurants');
+                    console.log('Add restaurants');
             }).catch(function() {
-                console.log('Transaction failed');
+                    console.log('Transaction failed');
             });
         }).catch(function() {
             const error = "Network error";
@@ -396,218 +372,69 @@ class DBHelper {
     }
     
     /**
-    * Static method used to insert / update data of the Reviews obtained from the server in the Browser database (IDB)
+    * Static method used to load data from the browser database (IDB)
     */
-    static putValuesReviewsDatabase() {
-        //Add Reviews Database
-        fetch(DBHelper.REVIEWS_DATABASE_URL()).then(function(response) {
-            if(response.ok) {
-                return response.json();
-            } else {
-                const error = "Data not loaded";
-                return error;
-            }
-        }).then(function(reviews) {
-            const dbPromise = DBHelper.openDatabase();
-            dbPromise.then(function(db) {
-                const tx = db.transaction('reviews','readwrite');
-                const reviewsStore = tx.objectStore('reviews');  
-                for(let i = 0;i < reviews.length;i++) {
-                    reviewsStore.put(reviews[i]);
-                };
-                return  tx.complete;
-            }).then(function() {
-                console.log('Add reviews');
-            }).catch(function() {
-                console.log('Transaction failed');
-            });
-        }).catch(function() {
-            const error = "Network error";
-            return error;
-        });
-    }
-    
-    /**
-    * Static method used to insert / update data offline of the Review obtained from the form in the Browser database (IDB)
-    */
-    static putOfflineValuesReviewDatabase(data_review, data_offline_review) {
-        //Add Review Database
+    static getValuesDatabase(callback) {
         const dbPromise = DBHelper.openDatabase();
+        let arrayRestaurants = [];
         dbPromise.then(function(db) {
-            const tx = db.transaction(['reviews','reviews-offline'],'readwrite');
-            const reviewsStore = tx.objectStore('reviews');  
-            reviewsStore.put(data_review);
-            const reviewsOfflineStore = tx.objectStore('reviews-offline');  
-            reviewsOfflineStore.put(data_offline_review);
-            return  tx.complete;
-        }).then(function() {
-            console.log('Add review');
-            setTimeout(function(){ location.reload(true); }, 3000);
-        }).catch(function() {
-            console.log('Transaction failed');
-        });
-    }
-    
-    /**
-    * Static method used to load data of the Restaurants from the browser database (IDB)
-    */
-    static getRestaurantsValuesDatabase(id = null, callback) {
-        if(id) {
-            const dbPromise = DBHelper.openDatabase();
-            dbPromise.then(function(db) {
-                const tx = db.transaction('restaurants');
-                const restaurantStore = tx.objectStore('restaurants');           
-                return restaurantStore.get(Number(id));
-            }).then(function(restaurant_value) {
-                callback(null,restaurant_value);
-                console.log("Transaction success");
-            }).catch(function() {
-                console.log('Transaction failed');
-            });
-        } else {
-            const dbPromise = DBHelper.openDatabase();
-            let arrayRestaurants = [];
-            dbPromise.then(function(db) {
-                const tx = db.transaction('restaurants');
-                const restaurantsStore = tx.objectStore('restaurants');           
-                return restaurantsStore.openCursor();
-            }).then(function createArrayRestaurants(cursor) {
-                if(!cursor) return;
-                arrayRestaurants.push(cursor.value);
-                return cursor.continue().then(createArrayRestaurants);
-            }).then(function() {
-                callback(null,arrayRestaurants);
-                console.log("Transaction success");
-            }).catch(function() {
-                console.log('Transaction failed');
-            });
-        }
-    }
-    
-    /**
-    * Static method used to load data of the Reviews from the browser database (IDB)
-    */
-    static getReviewsRestaurantValuesDatabase(restaurant_id,callback) {
-        const dbPromise = DBHelper.openDatabase();
-        let arrayReviews = [];
-        dbPromise.then(function(db) {
-            const tx = db.transaction('reviews');
-            const reviewsStore = tx.objectStore('reviews');
-            const reviewsRestaurantIndex = reviewsStore.index('restaurant_id');
-            return reviewsRestaurantIndex.openCursor(Number(restaurant_id));
-        }).then(function createArrayReviewsRestaurant(cursor) {
+            const tx = db.transaction('restaurants');
+            const restaurantsStore = tx.objectStore('restaurants');            
+            return  restaurantsStore.openCursor();
+        }).then(function createArrayRestaurants(cursor) {
             if(!cursor) return;
-            arrayReviews.push(cursor.value);
-            return cursor.continue().then(createArrayReviewsRestaurant);
+            arrayRestaurants.push(cursor.value);
+            return cursor.continue().then(createArrayRestaurants);
         }).then(function() {
-            callback(null,arrayReviews);
+            callback(null,arrayRestaurants);
             console.log("Transaction success");
-        }).catch(function() {
-            console.log('Transaction failed');
-        });
-    }
-    
-    /**
-    * Static method used to load data of the Reviews Offline from the browser database (IDB)
-    */
-    static getReviewsRestaurantOfflineValuesDatabase(callback) {
-        const dbPromise = DBHelper.openDatabase();
-        let arrayReviewsOffline = [];
-        dbPromise.then(function(db) {
-            const tx = db.transaction('reviews-offline');
-            const reviewsOfflineStore = tx.objectStore('reviews-offline');
-            return reviewsOfflineStore.openCursor();
-        }).then(function createArrayReviewsRestaurant(cursor) {
-            if(!cursor) return;
-            arrayReviewsOffline.push(cursor.value);
-            return cursor.continue().then(createArrayReviewsRestaurant);
-        }).then(function() {
-            callback(null,arrayReviewsOffline);
-            console.log("Transaction success");
-        }).catch(function() {
-            console.log('Transaction failed');
-        });
-    }
-    
-    /**
-    * Static method used to delete data of the Reviews Offline from the browser database (IDB)
-    */
-    static deleteReviewsRestaurantOfflineValuesDatabase(id_review) {
-        const dbPromise = DBHelper.openDatabase();
-        dbPromise.then(function(db) {
-            const tx = db.transaction('reviews-offline','readwrite');
-            const reviewsOfflineStore = tx.objectStore('reviews-offline');
-            return reviewsOfflineStore.delete(id_review);
-        }).then(function() {
-            console.log("Review deleted");
         }).catch(function() {
             console.log('Transaction failed');
         });
     }
 
-    /**
-    * Fetch all restaurants.
-    */
+  /**
+   * Fetch all restaurants.
+   */
     static fetchRestaurants(callback) {
-        fetch(DBHelper.RESTAURANTS_DATABASE_URL()).then(function(response) {
+        fetch(DBHelper.DATABASE_URL).then(function(response) {
             if(response.ok) {
                 //If the response status is 200 I'll take it
                 return response.json();
             } else {
                 //If the response status is different from 200 load the data from IDB
-                DBHelper.getRestaurantsValuesDatabase(null, callback);
+                DBHelper.getValuesDatabase(callback);
             }
         }).then(function(restaurants) {
             callback(null,restaurants);
         }).catch(function() {
             //If there is no line or there is a network error load the data from IDB
-            DBHelper.getRestaurantsValuesDatabase(null, callback);
+            DBHelper.getValuesDatabase(callback);
         });
     }
-    
-    /**
-    * Fetch all reviews of one restaurant.
-    */
-    static fetchReviewsRestaurant(restaurant_id, callback) {
-        fetch(DBHelper.REVIEWS_DATABASE_URL(restaurant_id)).then(function(response) {
-            if(response.ok) {
-                //If the response status is 200 I'll take it
-                return response.json();
-            } else {
-                //If the response status is different from 200 load the data from IDB
-                DBHelper.getReviewsRestaurantValuesDatabase(restaurant_id, callback);
-            }
-        }).then(function(reviews) {
-            callback(null,reviews);
-        }).catch(function() {
-            //If there is no line or there is a network error load the data from IDB
-            DBHelper.getReviewsRestaurantValuesDatabase(restaurant_id, callback);
-        });
-    }
-   
-    /**
-    * Fetch a restaurant by its ID.
-    */
+
+  /**
+   * Fetch a restaurant by its ID.
+   */
     static fetchRestaurantById(id, callback) {
-        fetch(DBHelper.RESTAURANTS_DATABASE_URL(id)).then(function(response) {
-            if(response.ok) {
-                //If the response status is 200 I'll take it
-                return response.json();
+        // fetch all restaurants with proper error handling.
+        DBHelper.fetchRestaurants((error, restaurants) => {
+            if (error) {
+                callback(error, null);
             } else {
-                //If the response status is different from 200 load the data from IDB
-                DBHelper.getRestaurantsValuesDatabase(id, callback);
+                const restaurant = restaurants.find(r => r.id == id);
+                if (restaurant) { // Got the restaurant
+                    callback(null, restaurant);
+                } else { // Restaurant does not exist in the database
+                    callback('Restaurant does not exist', null);
+                }
             }
-        }).then(function(restaurant) {
-            callback(null,restaurant);
-        }).catch(function() {
-            //If there is no line or there is a network error load the data from IDB
-            DBHelper.getRestaurantsValuesDatabase(id, callback);
         });
     }
-           
-    /**
-    * Fetch restaurants by a cuisine type with proper error handling.
-    */
+
+  /**
+   * Fetch restaurants by a cuisine type with proper error handling.
+   */
     static fetchRestaurantByCuisine(cuisine, callback) {
         // Fetch all restaurants  with proper error handling
         DBHelper.fetchRestaurants((error, restaurants) => {
@@ -621,9 +448,9 @@ class DBHelper {
         });
     }
 
-    /**
-    * Fetch restaurants by a neighborhood with proper error handling.
-    */
+  /**
+   * Fetch restaurants by a neighborhood with proper error handling.
+   */
     static fetchRestaurantByNeighborhood(neighborhood, callback) {
         // Fetch all restaurants
         DBHelper.fetchRestaurants((error, restaurants) => {
@@ -713,8 +540,9 @@ class DBHelper {
      */
     static mapMarkerForRestaurant(restaurant, map) {
         //Calc Media Review 
+        const media_review = calcMediaReviews(restaurant.reviews);
         //Info Restaurant
-        const restaurant_info = restaurant.name+', Cuisine: '+restaurant.cuisine_type+', Today open: '+findRestaurantCurrentDayOpeningTimeHTML(restaurant.operating_hours);        
+        const restaurant_info = restaurant.name+', Cuisine: '+restaurant.cuisine_type+''+(media_review != "" ? ', Media Review: '+media_review : '')+', Today open: '+findRestaurantCurrentDayOpeningTimeHTML(restaurant.operating_hours);        
        
         const marker = new google.maps.Marker({
             position: restaurant.latlng,
@@ -742,57 +570,4 @@ class DBHelper {
     }
 
 }
-
-//Add Restaurants to the database
-DBHelper.putValuesRestaurantsDatabase();
-
-//Send the saved reviews as soon as there is a connection
-if (window.Worker) { // Check if Browser supports the Worker api.
-    // Requires script name as input
-    var myWorker = new Worker("../ww.js");
-    
-    let areReviewsOffline = false;
-    
-    function AddReviewsOffline() {
-        DBHelper.getReviewsRestaurantOfflineValuesDatabase(function(error,reviews){
-            if(error) {
-                console.log(error);
-            } else {
-                if(reviews.length == 0) {
-                    if(areReviewsOffline) {
-                        const modalOverlay = document.querySelector('.modal-overlay');
-                        modalOverlay.style.display = 'block';
-                        modalOverlay.style.zIndex = 9;
-                        const info_box = document.createElement("div");
-                        info_box.classList.add("info-box");
-                        const message = document.createElement("p");
-                        message.innerHTML = "Reviews offline added thanks";
-                        info_box.appendChild(message);
-                        document.body.appendChild(info_box);
-                        setTimeout(function(){ 
-                            modalOverlay.style.display = "none";
-                            info_box.style.display = "none";
-                        }, 3000);
-                    }
-                    clearInterval(idInterval);
-                } else {
-                    areReviewsOffline = true;
-                }
-                let id_review;
-                reviews.forEach(function(review) {
-                    myWorker.postMessage(review);
-                    console.log('Message posted to worker');
-                    myWorker.addEventListener('message', function(e) {
-                        if(e.data >= 0) {
-                            DBHelper.deleteReviewsRestaurantOfflineValuesDatabase(e.data);
-                            console.log('Message received from worker: Added review');
-                        } else {
-                            console.log(e.data);
-                        }
-                    });
-                });
-            }
-        });
-    }
-    const idInterval = setInterval(AddReviewsOffline, 5000);
-}
+DBHelper.putValuesDatabase();

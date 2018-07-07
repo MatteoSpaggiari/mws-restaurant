@@ -30,15 +30,6 @@ gulp.task('copy-sw', function(done) {
     done();
 });
 
-
-gulp.task('copy-ww', function(done) {
-    gulp.src('./ww.js')
-        .pipe(gulp.dest('./dist'))
-        .pipe(browserSync.stream());
-    done();
-});
-
-
 gulp.task('styles', function(done) {
     gulp.src('./sass/**/*.scss')
         .pipe(sourcemaps.init())
@@ -110,17 +101,13 @@ gulp.task('watch:copy-sw', function() {
     gulp.watch('./sw.js', gulp.series('copy-sw'));
 });
 
-gulp.task('watch:copy-ww', function() {
-    gulp.watch('./ww.js', gulp.series('copy-ww'));
-});
+gulp.task('watch', gulp.series('copy-html','copy-images','styles','scripts','copy-sw', gulp.parallel('watch:styles','watch:scripts','watch:copy-html','watch:copy-images','watch:copy-sw')));
 
-gulp.task('watch', gulp.series('copy-html','copy-images','styles','scripts','copy-sw','copy-ww', gulp.parallel('watch:styles','watch:scripts','watch:copy-html','watch:copy-images','watch:copy-sw','watch:copy-ww')));
-
-gulp.task('dist', gulp.series('copy-html','copy-images','copy-sw','copy-ww','styles-dist','scripts-dist', function(done) {
+gulp.task('dist', gulp.series('copy-html','copy-images','copy-sw','styles-dist','scripts-dist', function(done) {
     done(); 
 }));
 
-gulp.task('default', gulp.series('copy-html','copy-images','copy-sw','copy-ww','styles','scripts','watch', function(done) {
+gulp.task('default', gulp.series('copy-html','copy-images','copy-sw','styles','scripts','watch', function(done) {
     browserSync.init({
         server: './dist'
     });

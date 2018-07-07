@@ -18,7 +18,7 @@ $textShadowButtonHover: 2px 2px 1px #333;
 /* CSS Document */
 @font-face {
     font-family: "Headers";
-    font-display: fallback;
+    font-display: swap;
     src: url("../fonts/breeserif-regular-webfont.eot");
     src: url("../fonts/breeserif-regular-webfont.eot?#iefix") format("embedded-opentype"),
     url("../fonts/breeserif-regular-webfont.woff") format("woff"),
@@ -29,7 +29,7 @@ $textShadowButtonHover: 2px 2px 1px #333;
 }
 @font-face {
     font-family: "General";
-    font-display: fallback;
+    font-display: swap;
     src: url("../fonts/opensans-regular-webfont.eot");
     src: url("../fonts/opensans-regular-webfont.eot?#iefix") format("embedded-opentype"),
     url("../fonts/opensans-regular-webfont.woff") format("woff"),
@@ -136,6 +136,14 @@ section {
     padding: 25px;
     text-align: center;
     text-transform: uppercase;
+}
+
+.restaurants {
+    will-change: auto;
+}
+
+.map-container {
+    will-change: auto;
 }
 
 /* ====================== Navigation ====================== */
@@ -282,6 +290,7 @@ nav {
         box-shadow: $boxShadowCardRestaurantAndReview;
         overflow: hidden;
         opacity: 1;
+        will-change: auto;
         
         h1 {
             position: relative;
@@ -484,9 +493,9 @@ nav {
         font-weight: 200;
         line-height: 1.4rem;
         letter-spacing: 2px;
-        margin: 15px auto 30px;
+        margin: 15px auto 15px;
         padding: 5px;
-        width: 300px;
+        width: 260px;
         text-transform: uppercase;
         text-align: center;
         color: $colorHeader;
@@ -494,6 +503,29 @@ nav {
         border-radius: 3px;
         text-shadow: $textShadowHeader;
         box-shadow: $boxShadowCardRestaurantAndReview;
+    }
+    
+    > h3 {
+        text-align: center;
+        margin: 15px auto 30px;
+    }
+    
+    .button {
+        display: block;
+        margin: 0 auto 1.4rem;
+        text-align: center;
+        background-color: #333;
+        color: #fff;
+        text-shadow: none;
+        
+        &:hover, &:focus {
+            color: #333;
+            text-shadow: none;
+        }
+    }
+    
+    button.button::before {
+        content: "+ ";
     }
 }
 
@@ -603,6 +635,38 @@ figure {
     display: none;
 }
 
+.button {
+    background-color: $backgroundColorButton;
+    border: none;
+    color: $colorButton;
+    display: inline-block;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin: 0;
+    padding: 0 20px;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    box-shadow: 0 0 7px 1px #fff;
+    border-radius: 5px;
+    min-width: 48px;
+    min-height: 48px;
+    line-height: 48px;
+    letter-spacing: 1px;
+    transition: all 0.4s ease 0s;
+    text-shadow: $textShadowButton;
+    cursor: pointer;
+    box-shadow: 5px 5px 10px 0 #aaa;
+
+    &:hover, &:focus, &:active {
+        background-color: $backgroundColorButtonHover;
+        color: $colorButtonHover;
+        box-shadow: $boxShadowButton;
+        font-weight: bold;
+        text-shadow: $textShadowButtonHover;
+    }
+}
+
 /* Service Worker */
 .service-worker {
     position: fixed;
@@ -623,6 +687,234 @@ figure {
 
 #dismiss {
    color: #f00; 
+}
+
+.modal {
+    width: auto;
+    max-width: 280px;
+    border-radius: 7px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 8px 20px;
+    background-color: #fff;
+    z-index: 8; /* places the modal on top of everything */
+    position: fixed;
+    top: 2%;
+    left: 0;
+    right: 0;
+    display: none;
+        
+    h3 {
+        font-size: 1.4rem;
+        font-weight: 200;
+        line-height: 1.4rem;
+        letter-spacing: 2px;
+        margin: 46px auto 0;
+        padding: 5px;
+        width: 260px;
+        text-transform: uppercase;
+        text-align: center;
+        color: #444;
+        background-color: orange;
+        border-radius: 3px;
+        text-shadow: 2px 2px 1px #fff;
+        box-shadow: 5px 5px 10px 0 #aaa;
+    }
+    
+    .close-modal {
+        display: block;
+        position: absolute;
+        top: 0.6em;
+        right: 0.6em;
+        font-weight: bold;
+        width: 2rem;
+        height: 2rem;
+        min-width: 2rem;
+        min-height: 2rem;
+        background-color: orange;
+        text-align: center;
+        border-radius: 1.4rem;
+        line-height: 1.7rem;
+        cursor: pointer;
+        color: #444;
+        transition: all 0.4s ease 0s;
+        text-shadow: 2px 2px 1px #fff;
+        box-shadow: 5px 5px 10px 0 #aaa;
+        text-transform: uppercase;
+        border: none;
+        font-size: 0.9rem;
+        
+        &:hover, &:focus, &:active {
+            background-color: $backgroundColorButtonHover;
+            color: $colorButtonHover;
+            box-shadow: $boxShadowButton;
+            font-weight: bold;
+            text-shadow: $textShadowButtonHover;
+        }
+    }
+}
+
+.modal-overlay {
+    width: 100%;
+    height: 100%;
+    z-index: 7; /* places the modalOverlay between the main page and the modal dialog */
+    background-color: #000;
+    opacity: 0.5;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: none;
+    margin: 0;
+    padding: 0;
+}
+
+.info-box {
+    width: 50%;
+    max-width: 300px;
+    border-radius: 7px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 24px;
+    background-color: #fff;
+    z-index: 10; /* places the modal on top of everything */
+    position: fixed;
+    top: 40%;
+    left: 0;
+    right: 0;
+    
+    p {
+        text-transform: uppercase;
+        font-weight: bold;
+        text-align: center;
+    }
+}
+
+form {
+    overflow: scrool;
+    
+    fieldset {
+        border: none;
+        margin: 0;
+        padding: 0;
+        
+        ul {
+            list-style-type: none;
+            
+            li {
+                
+                padding: 0.5rem 0;
+                
+                label {
+                    font-family: "General", sans-serif;
+                    display: block;
+                    font-weight: bold;
+                    text-shadow: 5px 5px 5px #aaa;
+                    margin-bottom: 0.4rem;
+                }
+                
+                input {
+                    min-width: 45px;
+                    min-height: 32px;
+                    padding: 0.2rem;
+                    border-radius: 0.3rem;
+                    font-family: "General", sans-serif;
+                    background-color: #fff;
+                    border: 1px solid #ccc;
+                    font-size: 0.9rem;
+                    letter-spacing: 0;
+                    border-radius: 6px;
+                    outline: none;
+                    transition: all 0.4s ease 0s;
+                    box-shadow: 5px 5px 10px 0 #aaa;
+                    
+                    &:hover, &:focus {
+                        box-shadow: 0 0 7px 1px #df8e01;
+                        outline: none;
+                    }
+                }
+                
+                input.long {
+                    width: 25rem;
+                }
+                
+                input.normal {
+                    width: 14rem;
+                }
+                
+                input.short {
+                    width: 3rem;
+                }
+
+                textarea {
+                    border-radius: 0.3rem;
+                    vertical-align: top;
+                    border: 1px solid #ccc;
+                    box-shadow: 5px 5px 10px 0 #aaa;
+                    
+                    &:hover, &:focus {
+                        box-shadow: 0 0 7px 1px #df8e01;
+                        outline: none;
+                    }
+                    
+                }
+            }
+            
+            li.container-buttons {
+                margin: 1rem auto;
+                text-align: center;
+                
+                input {
+                    margin-right: 0.5rem;
+                    text-transform: uppercase;
+                    cursor: pointer;
+                }
+            }
+            
+        }
+    }
+}
+
+@media screen and (min-width: 500px) and (orientation: landscape) {
+    .modal {
+        max-width: 490px;
+        top: 0;
+        
+        h3 {
+            margin-top: 3px;
+        }
+        
+    }
+    
+    form fieldset ul li label {
+        display: inline-block;
+        min-width: 100px;
+    }
+    
+    form fieldset ul li {
+        padding: 0.3rem 0;
+    }
+    
+    form fieldset ul li.container-buttons {
+        margin: 0.1rem auto;
+    }
+}
+
+@media screen and (min-width: 760px) {
+    
+    .modal {
+        max-width: 500px;
+        top: 25%;
+    }
+    
+    form fieldset ul li {
+        padding: 0.7rem 0;
+    }
+    
+    form fieldset ul li label {
+        display: inline-block;
+        min-width: 100px;
+    }
+    
 }
 
 @media screen and (min-width: 1060px) {

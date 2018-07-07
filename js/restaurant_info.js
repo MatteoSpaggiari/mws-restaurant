@@ -1,26 +1,41 @@
 if(location.pathname.indexOf("restaurant.html") !== -1) {
-    let restaurant;
+    let restaurant, reviewsRestaurant;
     var map;
-
+    
+    //Add reviews to the database
+    DBHelper.putValuesReviewsDatabase();
+    
     /**
      * Initialize Google map, called from HTML.
      */
     window.initMap = () => {
-        fetchRestaurantFromURL((error, restaurant) => {
-          if (error) { // Got an error!
+        
+        fetchReviewsRestaurantFromURL((error, reviews) => {
+            if (error) { // Got an error!
                 console.error(error);
-          } else {
-                self.map = new google.maps.Map(document.getElementById('map'), {
-                    zoom: 16,
-                    center: restaurant.latlng,
-                    scrollwheel: false
-                });
-                fillBreadcrumb();
-                DBHelper.mapMarkerForRestaurantInfo(self.restaurant, self.map);
-          }
+            }
+            // fill Media Reviews
+            const mediaReviews = document.getElementById('media-reviews');
+            mediaReviews.innerHTML = "Media reviews: "+calcMediaReviews();
+            mediaReviews.setAttribute("aria-label","Media reviews: "+calcMediaReviews());
         });
+        
+        fetchRestaurantFromURL((error, restaurant) => {
+            if (error) { // Got an error!
+                  console.error(error);
+            } else {
+                  self.map = new google.maps.Map(document.getElementById('map'), {
+                      zoom: 16,
+                      center: restaurant.latlng,
+                      scrollwheel: false
+                  });
+                  fillBreadcrumb();
+                  DBHelper.mapMarkerForRestaurantInfo(self.restaurant, self.map);
+            }
+        });
+    
     };
-
+    
     /**
      * Get current restaurant from page URL.
      */
@@ -42,6 +57,31 @@ if(location.pathname.indexOf("restaurant.html") !== -1) {
                 }
                 fillRestaurantHTML();
                 callback(null, restaurant);
+            });
+        }
+    };
+    
+    /**
+     * Get current reviews for the restaurant from page URL.
+     */
+    fetchReviewsRestaurantFromURL  = (callback) => {
+        if (self.reviewsRestaurant) { // reviews restaurant already fetched!
+            callback(null, self.reviewsRestaurant)
+            return;
+        }
+        const id = getParameterByName('id');
+        if (!id) { // no id found in URL
+            error = 'No restaurant id in URL';
+            callback(error, null);
+        } else {
+            DBHelper.fetchReviewsRestaurant(id, (error, reviews) => {
+                self.reviewsRestaurant = reviews;
+                if (!reviews) { // Got an error
+                    console.error(error);
+                    return;
+                }
+                fillReviewsHTML();
+                callback(null,reviews);
             });
         }
     };
@@ -73,17 +113,8 @@ if(location.pathname.indexOf("restaurant.html") !== -1) {
 
         // fill operating hours
         if (restaurant.operating_hours) {
-          fillRestaurantHoursHTML();
+            fillRestaurantHoursHTML();
         }
-
-        // fill Media Reviews
-        const mediaReviews = document.getElementById('media-reviews');
-        mediaReviews.innerHTML = "<em>Media reviews: "+calcMediaReviews()+"</em>";
-        mediaReviews.setAttribute("aria-label","Media reviews: "+calcMediaReviews());
-
-
-        // fill reviews
-        fillReviewsHTML();
 
         // fill Summary Opening Times
         fillRestaurantHoursSummaryHTML();
@@ -147,15 +178,13 @@ if(location.pathname.indexOf("restaurant.html") !== -1) {
         }
         hours_summary.innerHTML = string;
     };
-
+    
     /**
      * Create all reviews HTML and add them to the webpage.
      */
-    fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+    fillReviewsHTML = (reviews = self.reviewsRestaurant) => {
+        
         const container = document.getElementById('reviews-container');
-        const title = document.createElement('h2');
-        title.innerHTML = 'Reviews';
-        container.appendChild(title);
 
         if (!reviews) {
             const noReviews = document.createElement('p');
@@ -189,7 +218,7 @@ if(location.pathname.indexOf("restaurant.html") !== -1) {
 
         const date = document.createElement('p');
         date.className = "date-review";
-        date.innerHTML = review.date;
+        date.innerHTML = new Date(review.updatedAt).toDateString();
         header.appendChild(date);
 
         const div_cont = document.createElement('div');
@@ -212,14 +241,14 @@ if(location.pathname.indexOf("restaurant.html") !== -1) {
     /**
      * Average calculation reviews
      */
-    calcMediaReviews = (reviews = self.restaurant.reviews) => {
+    calcMediaReviews = (reviews = self.reviewsRestaurant) => {
         if(reviews) {
             let i;
             let sum = 0;
             let media = 0;
             let num_reviews = reviews.length;
             for(i = 0; i < num_reviews; i++) {
-                sum = sum + reviews[i].rating;
+                sum = sum + Number(reviews[i].rating);
             }
             media = sum / num_reviews;
             media = media > 0 ? media.toFixed(2) : "No reviews available";
@@ -267,4 +296,195 @@ if(location.pathname.indexOf("restaurant.html") !== -1) {
             }
         });
     }
+    
+    /**
+     * Open modal for Add Review with Keyboard Trap 
+     */
+    // Will hold previously focused element
+    let focusedElementBeforeModal;
+
+    // Find the modal and its overlay
+    const modal = document.querySelector('.modal');
+    const modalOverlay = document.querySelector('.modal-overlay');
+
+    const modalToggle = document.querySelector('.modal-toggle');
+    modalToggle.addEventListener('click', openModal);
+    
+    function openModal() {
+        // Save current focus
+        focusedElementBeforeModal = document.activeElement;
+
+        // Listen for and trap the keyboard
+        modal.addEventListener('keydown', trapTabKey);
+
+        // Listen for indicators to close the modal
+        modalOverlay.addEventListener('click', closeModal);
+        
+        //Close modal
+        const closeModalButton = modal.querySelector('#close-modal');
+        closeModalButton.addEventListener("click",closeModal);
+
+        // Find all focusable children
+        let focusableElementsString = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex="0"], [contenteditable]';
+        let focusableElements = modal.querySelectorAll(focusableElementsString);
+        // Convert NodeList to Array
+        focusableElements = Array.prototype.slice.call(focusableElements);
+
+        let firstTabStop = focusableElements[0];
+        let lastTabStop = focusableElements[focusableElements.length - 1];
+
+        // Show the modal and overlay
+        modal.style.display = 'block';
+        modalOverlay.style.display = 'block';
+
+        // Focus first child
+        firstTabStop.focus();
+
+        function trapTabKey(e) {
+            // Check for TAB key press
+            if (e.keyCode === 9) {
+
+                // SHIFT + TAB
+                if (e.shiftKey) {
+                    if (document.activeElement === firstTabStop) {
+                        e.preventDefault();
+                        lastTabStop.focus();
+                    }
+
+                // TAB
+                } else {
+                    if (document.activeElement === lastTabStop) {
+                        e.preventDefault();
+                        firstTabStop.focus();
+                    }
+                }
+            }
+
+            // ESCAPE
+            if (e.keyCode === 27) {
+              closeModal();
+            }
+        }
+    }
+
+    function closeModal() {
+        // Hide the modal and overlay
+        modal.style.display = 'none';
+        modalOverlay.style.display = 'none';
+
+        // Set focus back to element that had it before the modal was opened
+        focusedElementBeforeModal.focus();
+    }
+    
+    
+
+    /**
+     * Send the review to the server
+     */
+    const formSendReview = document.getElementById("form_send_review");
+    //Add hidden field restaurant_id to form
+    const restaurant_id = getParameterByName('id');
+    const field_hidden_restaurant_id = document.createElement('input');
+    field_hidden_restaurant_id.type = "hidden";
+    field_hidden_restaurant_id.name = "restaurant_id";
+    field_hidden_restaurant_id.value = restaurant_id;
+    formSendReview.appendChild(field_hidden_restaurant_id);
+    
+    formSendReview.addEventListener("submit", function(event) {
+        let error = [];
+        event.preventDefault();
+        const name = document.getElementById("name");
+        const rating = document.getElementById("rating");
+        const comments = document.getElementById("comments");
+        const fieldsForm = [name,rating,comments];
+        fieldsForm.forEach(function(field) {
+            if(field.name == "name") {
+                if(field.value.trim() == "") {
+                    error.push("It is mandatory to insert the NAME!");
+                    field.style.borderColor = "#f00";
+                } else {
+                    field.style.borderColor = "#ccc";
+                }
+            }
+            if(field.name == "rating") {
+                if(field.value.trim() == "") {
+                    error.push("The EVALUATION is mandatory!");
+                    field.style.borderColor = "#f00";
+                } else {
+                    field.style.borderColor = "#ccc";
+                }
+            }
+            if(field.name == "comments") {
+                if(field.value.trim() == "") {
+                    error.push("It is mandatory to insert the comment!");
+                    field.style.borderColor = "#f00";
+                } else {
+                    field.style.borderColor = "#ccc";
+                }
+            }
+        });
+        if(error.length == 0) {
+            const id = getParameterByName('id');
+            const body_content = new FormData();
+            
+            body_content.append("name",name.value);
+            body_content.append("rating",Number(rating.value));
+            body_content.append("comments",comments.value);
+            body_content.append("restaurant_id",Number(id));
+            
+            const DateReview = new Date();
+            console.log(Date.parse(DateReview));
+            
+            const review_data = {
+                "name" : name.value,
+                "rating" : Number(rating.value),
+                "comments" : comments.value,
+                "restaurant_id" : Number(id),
+                "createdAt" : Date.parse(DateReview),
+                "updatedAt" : Date.parse(DateReview)
+            };
+            
+            const review_offline_data = {
+                "name" : name.value,
+                "rating" : Number(rating.value),
+                "comments" : comments.value,
+                "restaurant_id" : Number(id)
+            };
+            
+            fetch('http://localhost:1337/reviews/',
+            {
+                method: "POST",
+                "Accept-Charset": "utf-8",
+                "Content-Type": "application/x-www-form-urlencoded",
+                body: body_content
+            }).then(function(response) {
+                if(response.ok) {
+                    return response.json();
+                } else {
+                    const error = "Data not loaded";
+                    return error;
+                }
+            }).then(function(data) {
+                modalOverlay.style.zIndex = 9;
+                const info_box = document.createElement("div");
+                info_box.classList.add("info-box");
+                const message = document.createElement("p");
+                message.innerHTML = "Review added thanks";
+                info_box.appendChild(message);
+                document.body.appendChild(info_box);
+                setTimeout(function(){ location.reload(true); }, 3000);
+            }).catch(function() {
+                const error = "Network error";
+                console.log(error);
+                modalOverlay.style.zIndex = 9;
+                const info_box = document.createElement("div");
+                info_box.classList.add("info-box");
+                const message = document.createElement("p");
+                message.innerHTML = "No connection, the review will be sent as soon as possible thanks";
+                info_box.appendChild(message);
+                document.body.appendChild(info_box);
+                DBHelper.putOfflineValuesReviewDatabase(review_data,review_offline_data);
+            });
+        }
+    });
 }

@@ -38,7 +38,7 @@
             <section id="map-restaurant-container" class="map-restaurant-container" role="main">
                 <!-- Beginning map -->
                 <section id="map-container" class="map-container" role="application" aria-label="Google Maps" aria-hidden="true">
-                    <div id="map" class="map"></div>
+                    <div id="map" class="map">GOOGLE MAPS</div>
                 </section>
                 <!-- End map -->
                 <!-- Beginning restaurant -->
@@ -51,18 +51,47 @@
                     <p id="restaurant-address" class="restaurant-address" tabindex="0"></p>
                     <table id="restaurant-hours" class="restaurant-hours" tabindex="0" aria-labelledby="hours-summary"></table>
                     <p id="hours-summary" class="hours-summary" hidden aria-hidden="false"></p>
-                    <p id="media-reviews" class="media-reviews" tabindex="0"></p>
                 </section>
                 <!-- End restaurant -->
             </section>
             <!-- End map-restaurant -->
             <!-- Beginning reviews -->
             <section id="reviews-container" class="reviews-container" role="complementary">
+                <button id="add_review" class="add_review button modal-toggle" tabindex="0">Add Review</button>                
+                <h2>Reviews</h2>
+                <h3 id="media-reviews" class="media-reviews" tabindex="0"></h3>
                 <ul id="reviews-list" class="reviews-list"></ul>
             </section>
             <!-- End reviews -->
         </main>
         <!-- End main -->
+        <div class="modal">
+            <h3>Add Review</h3>
+            <form id="form_send_review" class="form_send_review" method="post" action="#" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+                <fieldset>
+                    <ul>
+                        <li>
+                            <label for="fullname">Full Name:</label>
+                            <input id="name" class="normal" name="name" type="text" />
+                        </li>
+                        <li>
+                            <label for="rating">Rating:</label>
+                            <input id="rating" class="short" name="rating" type="number" min="1" max="5" step="1" value="" />
+                        </li>
+                        <li>
+                            <label for="comments">Comment:</label>
+                            <textarea id="comments" name="comments" rows="8" cols="36"></textarea>
+                        </li>
+                        <li class="container-buttons">
+                            <input id="send_review" class="button" name="send_review" type="submit" value="Send" />
+                            <input id="reset" class="button" name="reset" type="reset" value="Reset" />
+                        </li>
+                    </ul>
+                </fieldset>
+            </form>
+            <button id="close-modal" class="close-modal" tabindex="0">X</button>
+        </div>
+        <div class="modal-overlay"></div>
         <!-- Beginning footer -->
         <footer id="footer" class="footer">
               Copyright (c) 2017 <a href="./index.html"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
