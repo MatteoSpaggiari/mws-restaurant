@@ -2,9 +2,9 @@ const staticCacheName = 'restaurant-reviews-v57';
 const contentImgsCache = 'restaurant-reviews-content-imgs';
 const contentRestaurantCache = 'restaurant-reviews-content-restaurant';
 const allCaches = [
-  staticCacheName,
-  contentImgsCache,
-  contentRestaurantCache
+    staticCacheName,
+    contentImgsCache,
+    contentRestaurantCache
 ];
 
 /**
@@ -26,7 +26,9 @@ self.addEventListener('install', function(event) {
             'fonts/opensans-regular-webfont.svg',
             'fonts/opensans-regular-webfont.ttf',
             'fonts/opensans-regular-webfont.woff',
-            'js/all.js',
+            'js/index.js',
+            'js/offline_first.js',
+            'js/restaurant.js',
             'img/icons/favicon.ico',
             'img/icons/restaurants-review-192.png',
             'manifest.webmanifest',
@@ -82,31 +84,31 @@ self.addEventListener('fetch', function(event) {
     );
 });
 
-function servePhoto(request) {
-  const storageUrl = request.url;
-  return caches.open(contentImgsCache).then(function(cache) {
-    return cache.match(storageUrl).then(function(response) {
-      if (response) return response;
-      return fetch(request).then(function(networkResponse) {
-        cache.put(storageUrl, networkResponse.clone());
-        return networkResponse;
-      });
+servePhoto = (request) => {
+    const storageUrl = request.url;
+    return caches.open(contentImgsCache).then(function(cache) {
+        return cache.match(storageUrl).then(function(response) {
+            if (response) return response;
+            return fetch(request).then(function(networkResponse) {
+                cache.put(storageUrl, networkResponse.clone());
+                return networkResponse;
+            });
+        });
     });
-  });
-}
+};
 
-function serveRestaurant(request) {
-  const storageUrl = request.url;
-  return caches.open(contentRestaurantCache).then(function(cache) {
-    return cache.match(storageUrl).then(function(response) {
-      if (response) return response;
-      return fetch(request).then(function(networkResponse) {
-        cache.put(storageUrl, networkResponse.clone());
-        return networkResponse;
-      });
+serveRestaurant = (request) => {
+    const storageUrl = request.url;
+    return caches.open(contentRestaurantCache).then(function(cache) {
+        return cache.match(storageUrl).then(function(response) {
+            if (response) return response;
+            return fetch(request).then(function(networkResponse) {
+                cache.put(storageUrl, networkResponse.clone());
+                return networkResponse;
+            });
+        });
     });
-  });
-}
+};
 
 /**
  * Message that serves to update the SW by the user

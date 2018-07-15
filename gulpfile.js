@@ -7,11 +7,15 @@ var uglifyes = require('gulp-uglify');
 var uglify = require('gulp-uglifyes');
 var babel = require('gulp-babel');
 var sourcemaps = require('gulp-sourcemaps');
+var gzip = require('gulp-gzip');
 var pump = require('pump');
+var webp = require('gulp-webp');
+var htmlmin = require('gulp-htmlmin');
 
 
 gulp.task('copy-html', function(done) {
     gulp.src('./*.html')
+        .pipe(htmlmin({collapseWhitespace: true}))
         .pipe(gulp.dest('./dist'))
         .pipe(browserSync.stream());
     done();
@@ -19,6 +23,7 @@ gulp.task('copy-html', function(done) {
 
 gulp.task('copy-images', function(done) {
     gulp.src('./img/*')
+        .pipe(webp())
         .pipe(gulp.dest('./dist/img'));
     done();
 });
@@ -68,9 +73,20 @@ gulp.task('styles-dist', function(done) {
 });
 
 gulp.task('scripts', function(done) {
-    gulp.src('./js/*.js')
+    gulp.src(['./js/dbhelper.js','./js/main.js'])
         .pipe(sourcemaps.init())
-        .pipe(concat('all.js'))
+        .pipe(concat('index.js'))
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('./dist/js'));
+    done();
+    gulp.src(['./js/dbhelper.js','./js/restaurant_info.js'])
+        .pipe(sourcemaps.init())
+        .pipe(concat('restaurant.js'))
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('./dist/js'));
+    done();
+    gulp.src(['./js/offline_first.js'])
+        .pipe(sourcemaps.init())
         .pipe(sourcemaps.write())
         .pipe(gulp.dest('./dist/js'));
     done();
@@ -78,8 +94,29 @@ gulp.task('scripts', function(done) {
 
 gulp.task('scripts-dist', function(done) {
     pump([
-        gulp.src('./js/*.js'),
-        concat('all.js'),
+        gulp.src(['./js/dbhelper.js','./js/main.js']),
+        concat('index.js'),
+        uglify({ 
+            mangle: false, 
+            ecma: 6 
+        }),
+        gulp.dest('./dist/js')
+    ],
+    done()
+    );    
+    pump([
+        gulp.src(['./js/dbhelper.js','./js/restaurant_info.js']),
+        concat('restaurant.js'),
+        uglify({ 
+            mangle: false, 
+            ecma: 6 
+        }),
+        gulp.dest('./dist/js')
+    ],
+    done()
+    );
+    pump([
+        gulp.src(['./js/offline_first.js']),
         uglify({ 
             mangle: false, 
             ecma: 6 

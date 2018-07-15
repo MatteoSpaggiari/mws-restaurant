@@ -9,8 +9,40 @@
         <meta name="theme-color" content="#fdfdfd">
         <link rel="manifest" href="./manifest.webmanifest">
         <link rel="icon" type="image/x-icon" href="./img/icons/favicon.ico" />
-        <!-- Main CSS file -->
-        <link rel="stylesheet" href="./css/styles.css">
+        <style>
+            nav {
+                width: 100%;
+                height: auto;
+                line-height: 2rem;
+                background-color: #444;
+                text-align: center;
+                padding: 0;
+            }
+            .main-content {
+                background-color: #f3f3f3;
+                min-height: 100%;
+            }
+            nav h1 {
+                margin: auto;
+                font-size: 1.5rem;
+                padding: 0.8rem 0;
+            }
+            nav h1 a {
+                color: #fff;
+                font-weight: 700;
+                letter-spacing: 4px;
+                text-transform: uppercase;
+            }
+            .footer {
+                background-color: #444;
+                color: #f6f6f6;
+                font-size: 0.7rem;
+                letter-spacing: 1px;
+                padding: 25px;
+                text-align: center;
+                text-transform: uppercase;
+            }
+        </style>
         <title>Restaurant Info</title>
     </head>
     <!-- End head -->
@@ -67,7 +99,7 @@
         <!-- End main -->
         <div class="modal">
             <h3>Add Review</h3>
-            <form id="form_send_review" class="form_send_review" method="post" action="#" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+            <form role="form" aria-label="From to add a review" id="form_send_review" class="form_send_review" method="post" action="#" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
                 <fieldset>
                     <ul>
                         <li>
@@ -98,9 +130,26 @@
         </footer>
         <!-- End footer -->
         <!-- Beginning scripts -->
-        <script type="application/javascript" charset="utf-8" src="./js/all.js"></script>
+        <script type="application/javascript" charset="utf-8" src="./js/restaurant.js"></script>
+        <script async defer type="application/javascript" charset="utf-8" src="./js/offline_first.js"></script>
         <!-- Google Maps -->
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDkElR1xBQw822KmuHWYhDee62bHvhutgA&libraries=places&callback=initMap"></script>
+        <noscript id="deferred-styles">
+            <link rel="stylesheet" type="text/css" href="./css/styles.css"/>
+        </noscript>
+        <script>
+            const loadDeferredStyles = function() {
+                const addStylesNode = document.getElementById("deferred-styles");
+                const replacement = document.createElement("div");
+                replacement.innerHTML = addStylesNode.textContent;
+                document.body.appendChild(replacement);
+                addStylesNode.parentElement.removeChild(addStylesNode);
+            };
+            const raf = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+            if (raf) raf(function() { window.setTimeout(loadDeferredStyles, 50); });
+            else window.addEventListener('load', loadDeferredStyles);
+        </script>
         <!-- End scripts -->
     </body>
     <!-- End body -->

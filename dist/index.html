@@ -1,67 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-    <!-- Beginning head -->
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Choose the restaurant that best suits you, here you can find information and reviews of thousands of restaurants.">
-        <meta name="keywords" content="Restaurants review, Restaurants, Reviews, Restaurants Info">
-        <meta name="theme-color" content="#fdfdfd">
-        <link rel="manifest" href="./manifest.webmanifest">
-        <link rel="icon" type="image/x-icon" href="./img/icons/favicon.ico" />
-        <!-- Main CSS file -->
-        <link rel="stylesheet" href="./css/styles.css">
-        <title>Restaurant Reviews</title>
-    </head>
-    <!-- End head -->
-    <!-- Beginning body -->
-    <body>
-        <!-- Skip Link -->
-        <a href="#restaurants" id="skip-link-index" class="skip-link">Skip the map and go to the filter</a>
-        <!-- Beginning header -->
-        <header>
-            <!-- Beginning nav -->
-            <nav>
-                <h1><a href="./index.html">Restaurant Reviews</a></h1>
-            </nav>
-            <!-- End nav -->
-        </header>
-        <!-- End header -->
-        <!-- Beginning main -->
-        <main id="main-content" class="main-content">
-            <!-- Beginning map -->
-            <section id="map-container" class="map-container" role="application" aria-label="Google Maps" aria-hidden="true">
-                <div id="map" class="map" aria-label="Restaurants"></div>
-            </section>
-            <!-- Beginning restaurants -->
-            <section id="restaurants" class="restaurants" tabindex="-1" role="contentinfo">
-                <div class="filter-options">
-                    <h2>Filter Results</h2>
-                    <span id="neighborhoods-select-label" class="label-hidden" hidden>Choose a neighborhood</span>
-                    <select id="neighborhoods-select" name="neighborhoods" aria-labelledby="neighborhoods-select-label">
-                        <option value="all">All Neighborhoods</option>
-                    </select>
-                    <span id="cuisines-select-label" class="label-hidden" hidden>Choose a cuisines</span>
-                    <select id="cuisines-select" name="cuisines" aria-labelledby="cuisines-select-label">
-                        <option value="all">All Cuisines</option>
-                    </select>
-                </div>
-                <ul id="restaurants-list" class="restaurants-list"></ul>
-            </section>
-            <!-- End restaurant -->
-            <div id="modal-overlay" class="modal-overlay"></div>
-        </main>
-        <!-- End main -->
-        <!-- Beginning footer -->
-        <footer id="footer" class="footer">
-            Copyright (c) 2017 <a href="./index.html"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
-        </footer>
-        <!-- End footer -->
-        <!-- Beginning scripts -->
-        <script type="application/javascript" charset="utf-8" src="./js/all.js"></script>
-        <!-- Google Maps -->
-        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDkElR1xBQw822KmuHWYhDee62bHvhutgA&libraries=places&callback=initMap"></script>
-        <!-- End scripts -->
-    </body>
-    <!-- End body -->
-</html>
+<!DOCTYPE html><html lang="en"><!-- Beginning head --><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Choose the restaurant that best suits you, here you can find information and reviews of thousands of restaurants."><meta name="keywords" content="Restaurants review, Restaurants, Reviews, Restaurants Info"><meta name="theme-color" content="#fdfdfd"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/x-icon" href="./img/icons/favicon.ico"><style>nav {
+                width: 100%;
+                height: auto;
+                line-height: 2rem;
+                background-color: #444;
+                text-align: center;
+                padding: 0;
+            }
+            .main-content {
+                background-color: #f3f3f3;
+                min-height: 100%;
+            }
+            nav h1 {
+                margin: auto;
+                font-size: 1.5rem;
+                padding: 0.8rem 0;
+            }
+            nav h1 a {
+                color: #fff;
+                font-weight: 700;
+                letter-spacing: 4px;
+                text-transform: uppercase;
+            }
+            .footer {
+                background-color: #444;
+                color: #f6f6f6;
+                font-size: 0.7rem;
+                letter-spacing: 1px;
+                padding: 25px;
+                text-align: center;
+                text-transform: uppercase;
+            }</style><title>Restaurant Reviews</title></head><!-- End head --><!-- Beginning body --><body><!-- Skip Link --> <a href="#restaurants" id="skip-link-index" class="skip-link">Skip the map and go to the filter</a><!-- Beginning header --><header><!-- Beginning nav --><nav><h1><a href="./index.html">Restaurant Reviews</a></h1></nav><!-- End nav --></header><!-- End header --><!-- Beginning main --><main id="main-content" class="main-content"><!-- Beginning map --><section id="map-container" class="map-container" role="application" aria-label="Google Maps" aria-hidden="true"><div id="map" class="map" aria-label="Restaurants"></div></section><!-- Beginning restaurants --><section id="restaurants" class="restaurants" tabindex="-1" role="contentinfo"><div class="filter-options"><h2>Filter Results</h2><span id="neighborhoods-select-label" class="label-hidden" hidden>Choose a neighborhood</span> <select id="neighborhoods-select" name="neighborhoods" aria-labelledby="neighborhoods-select-label"><option value="all">All Neighborhoods</option></select> <span id="cuisines-select-label" class="label-hidden" hidden>Choose a cuisines</span> <select id="cuisines-select" name="cuisines" aria-labelledby="cuisines-select-label"><option value="all">All Cuisines</option></select></div><ul id="restaurants-list" class="restaurants-list"></ul></section><!-- End restaurant --><div id="modal-overlay" class="modal-overlay"></div></main><!-- End main --><!-- Beginning footer --><footer id="footer" class="footer">Copyright (c) 2017 <a href="./index.html"><strong>Restaurant Reviews</strong></a> All Rights Reserved.</footer><!-- End footer --><!-- Beginning scripts --><script type="application/javascript" charset="utf-8" src="./js/index.js"></script><script async defer="defer" type="application/javascript" charset="utf-8" src="./js/offline_first.js"></script><!-- Google Maps --><script async defer="defer" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDkElR1xBQw822KmuHWYhDee62bHvhutgA&libraries=places&callback=initMap"></script><noscript id="deferred-styles"><link rel="stylesheet" type="text/css" href="./css/styles.css"></noscript><script>const loadDeferredStyles = function() {
+                const addStylesNode = document.getElementById("deferred-styles");
+                const replacement = document.createElement("div");
+                replacement.innerHTML = addStylesNode.textContent;
+                document.body.appendChild(replacement);
+                addStylesNode.parentElement.removeChild(addStylesNode);
+            };
+            const raf = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+            if (raf) raf(function() { window.setTimeout(loadDeferredStyles, 50); });
+            else window.addEventListener('load', loadDeferredStyles);</script><!-- End scripts --></body><!-- End body --></html>

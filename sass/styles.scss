@@ -123,21 +123,6 @@ section {
     display: block;
 }
 
-.main-content {
-    background-color: #f3f3f3;
-    min-height: 100%;
-}
-
-.footer {
-    background-color: #444;
-    color: #f6f6f6;
-    font-size: 0.7rem;
-    letter-spacing: 1px;
-    padding: 25px;
-    text-align: center;
-    text-transform: uppercase;
-}
-
 .restaurants {
     will-change: auto;
 }
@@ -148,12 +133,6 @@ section {
 
 /* ====================== Navigation ====================== */
 nav {
-    width: 100%;
-    height: auto;
-    line-height: 2rem;
-    background-color: #444;
-    text-align: center;
-    padding: 0;
     
     h1 {
         margin: auto;
@@ -389,6 +368,22 @@ nav {
                 box-shadow: $boxShadowButton;
                 font-weight: bold;
                 text-shadow: $textShadowButtonHover;
+            }
+        }
+        
+        .favorite {
+            display: block;
+            position: absolute;
+            z-index: 3;
+            font-size: 1.8rem;
+            color: orange;
+            top: 3.2rem;
+            right: 0.5rem;
+            text-shadow: 2px 2px 4px #000;
+            cursor: pointer;
+            
+            &:hover, &:focus {
+                color: #fff;
             }
         }
     }
@@ -962,6 +957,10 @@ form {
                     box-shadow: 0 0 7px 1px #df8e01;
                     font-weight: bold;
                 }
+            }
+            
+            .favorite {
+                top: 0.3rem;
             }
         }
     }

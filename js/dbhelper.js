@@ -337,6 +337,27 @@ class DBHelper {
         }
     }
     
+    static openAdviseUser(advise,type) {
+        const modalOverlay = document.querySelector('.modal-overlay');
+        modalOverlay.style.zIndex = 9;
+        const info_box = document.createElement("div");
+        info_box.classList.add("info-box");
+        const message = document.createElement("p");
+        message.innerHTML = advise;
+        info_box.appendChild(message);
+        document.body.appendChild(info_box);
+        if(type == "reload") {
+            setTimeout(function(){ 
+                location.reload(true);
+            }, 3000);
+        } else if(type == "hide") {
+            setTimeout(function(){
+                modalOverlay.style.display = "none";
+                info_box.style.display = "none";
+            }, 3000);
+        }
+    }
+    
     /**
     * Static method used to open the database (IDB) and get a dbPromise
     */
@@ -351,6 +372,7 @@ class DBHelper {
             let restaurantsStore;
             let reviewsStore;
             let reviewsOfflineStore;
+            let favoritesRestaurantsOfflineStore;
             switch(upgradeDb.oldVersion) {
 		case 0:
                     restaurantsStore = upgradeDb.createObjectStore('restaurants', {keyPath: 'id', autoIncrement: true});
@@ -359,6 +381,8 @@ class DBHelper {
                     reviewsStore.createIndex('restaurant_id','restaurant_id',{ unique: false });
                 case 2: 
                     reviewsOfflineStore = upgradeDb.createObjectStore('reviews-offline', {keyPath: 'id', autoIncrement: true});
+                case 3: 
+                    favoritesRestaurantsOfflineStore = upgradeDb.createObjectStore('favorites-restaurants-offline', {keyPath: 'id'});
             }
         });
     }
@@ -390,6 +414,52 @@ class DBHelper {
                 console.log('Transaction failed');
             });
         }).catch(function() {
+            const error = "Network error";
+            return error;
+        });
+    }
+    
+    /**
+    * Static method to make a restaurant become a favorite
+    */
+    static putIsFavoriteRestaurantDatabase(id_restaurant, favorite, favoriteHTML) {
+        let is_favorite;
+        //Update Favorite Restaurant Database
+        if(String(favorite) == "true") {
+            is_favorite = '/?is_favorite=false';
+            
+        } else {
+            is_favorite = '/?is_favorite=true';
+        }
+        console.log(DBHelper.RESTAURANTS_DATABASE_URL(id_restaurant)+is_favorite);
+        fetch(DBHelper.RESTAURANTS_DATABASE_URL(id_restaurant)+is_favorite,{ method: 'PUT', "Accept-Charset": "utf-8", "Content-Type": "application/json" }).then(function(response) {
+            if(response.ok) {
+                return response.json();
+            } else {
+                const error = "Data not loaded";
+                return error;
+            }
+        }).then(function(restaurant) {
+            if(String(restaurant.is_favorite) == "true") {
+                favoriteHTML.innerHTML = '&#9733;';
+                favoriteHTML.setAttribute('data-favorite','true');
+            } else {
+                favoriteHTML.innerHTML = '&#9734;';
+                favoriteHTML.setAttribute('data-favorite','false');
+            }
+            const dbPromise = DBHelper.openDatabase();
+            dbPromise.then(function(db) {
+                const tx = db.transaction('restaurants','readwrite');
+                const restaurantsStore = tx.objectStore('restaurants');  
+                restaurantsStore.put(restaurant);
+                return tx.complete;
+            }).then(function() {
+                console.log('Update favorite restaurant');
+            }).catch(function() {
+                console.log('Transaction failed');
+            });
+        }).catch(function() {
+            DBHelper.putOfflineIsFavoriteRestaurantDatabase(id_restaurant, favorite, favoriteHTML);
             const error = "Network error";
             return error;
         });
@@ -442,7 +512,61 @@ class DBHelper {
             return  tx.complete;
         }).then(function() {
             console.log('Add review');
-            setTimeout(function(){ location.reload(true); }, 3000);
+            const advise = "No connection, the review will be sent as soon as possible thanks";
+            DBHelper.openAdviseUser(advise,'reload');
+        }).catch(function() {
+            console.log('Transaction failed');
+        });
+    }
+    
+    /**
+    * Static method used to insert / update data offline of the Review obtained from the form in the Browser database (IDB)
+    */
+    static putOfflineIsFavoriteRestaurantDatabase(id_restaurant, favorite, favoriteHTML) {
+        //Add Favorite Restaurant Database
+        let is_favorite;
+        //Update Favorite Restaurant Database
+        if(String(favorite) == "true") {
+            is_favorite = 'false';
+            
+        } else {
+            is_favorite = 'true';
+        }
+        const data_offline_favorite_restaurant = {
+            "id" : id_restaurant,
+            "is_favorite" : String(is_favorite)
+        };
+        const dbPromise = DBHelper.openDatabase();
+        dbPromise.then(function(db) {
+            const tx = db.transaction('restaurants','readwrite');
+            const restaurantsStore = tx.objectStore('restaurants');  
+            return restaurantsStore.get(id_restaurant);
+        }).then(function(restaurant) {
+            if(String(favorite) == "true") {
+                restaurant.is_favorite = "false";
+            } else {
+                restaurant.is_favorite = "true";
+            }
+            const dbPromise = DBHelper.openDatabase();
+            dbPromise.then(function(db) {
+                const tx = db.transaction(['restaurants','favorites-restaurants-offline'],'readwrite');
+                const restaurantsStore = tx.objectStore('restaurants'); 
+                restaurantsStore.put(restaurant);
+                const favoritesRestaurantsOfflineStore = tx.objectStore('favorites-restaurants-offline');  
+                favoritesRestaurantsOfflineStore.put(data_offline_favorite_restaurant);
+                return tx.complete;
+            }).then(function() {
+                if(favorite == "true") {
+                    favoriteHTML.innerHTML = '&#9734;';
+                    favoriteHTML.setAttribute('data-favorite','false');
+                } else {
+                    favoriteHTML.innerHTML = '&#9733;';
+                    favoriteHTML.setAttribute('data-favorite','true');
+                }
+                console.log('Update favorite restaurant');
+                const advise = "No connection, the favorites restaurants will be sent as soon as possible thanks";
+                DBHelper.openAdviseUser(advise,"hide");
+            });
         }).catch(function() {
             console.log('Transaction failed');
         });
@@ -502,44 +626,6 @@ class DBHelper {
         }).then(function() {
             callback(null,arrayReviews);
             console.log("Transaction success");
-        }).catch(function() {
-            console.log('Transaction failed');
-        });
-    }
-    
-    /**
-    * Static method used to load data of the Reviews Offline from the browser database (IDB)
-    */
-    static getReviewsRestaurantOfflineValuesDatabase(callback) {
-        const dbPromise = DBHelper.openDatabase();
-        let arrayReviewsOffline = [];
-        dbPromise.then(function(db) {
-            const tx = db.transaction('reviews-offline');
-            const reviewsOfflineStore = tx.objectStore('reviews-offline');
-            return reviewsOfflineStore.openCursor();
-        }).then(function createArrayReviewsRestaurant(cursor) {
-            if(!cursor) return;
-            arrayReviewsOffline.push(cursor.value);
-            return cursor.continue().then(createArrayReviewsRestaurant);
-        }).then(function() {
-            callback(null,arrayReviewsOffline);
-            console.log("Transaction success");
-        }).catch(function() {
-            console.log('Transaction failed');
-        });
-    }
-    
-    /**
-    * Static method used to delete data of the Reviews Offline from the browser database (IDB)
-    */
-    static deleteReviewsRestaurantOfflineValuesDatabase(id_review) {
-        const dbPromise = DBHelper.openDatabase();
-        dbPromise.then(function(db) {
-            const tx = db.transaction('reviews-offline','readwrite');
-            const reviewsOfflineStore = tx.objectStore('reviews-offline');
-            return reviewsOfflineStore.delete(id_review);
-        }).then(function() {
-            console.log("Review deleted");
         }).catch(function() {
             console.log('Transaction failed');
         });
@@ -704,7 +790,7 @@ class DBHelper {
     /**
      * Restaurant image URL.
      */
-    static imageUrlForRestaurant(restaurant) {
+    static imageUrlForRestaurant() {
         return (`./img/`);
     }
 
@@ -745,54 +831,3 @@ class DBHelper {
 
 //Add Restaurants to the database
 DBHelper.putValuesRestaurantsDatabase();
-
-//Send the saved reviews as soon as there is a connection
-if (window.Worker) { // Check if Browser supports the Worker api.
-    // Requires script name as input
-    var myWorker = new Worker("../ww.js");
-    
-    let areReviewsOffline = false;
-    
-    function AddReviewsOffline() {
-        DBHelper.getReviewsRestaurantOfflineValuesDatabase(function(error,reviews){
-            if(error) {
-                console.log(error);
-            } else {
-                if(reviews.length == 0) {
-                    if(areReviewsOffline) {
-                        const modalOverlay = document.querySelector('.modal-overlay');
-                        modalOverlay.style.display = 'block';
-                        modalOverlay.style.zIndex = 9;
-                        const info_box = document.createElement("div");
-                        info_box.classList.add("info-box");
-                        const message = document.createElement("p");
-                        message.innerHTML = "Reviews offline added thanks";
-                        info_box.appendChild(message);
-                        document.body.appendChild(info_box);
-                        setTimeout(function(){ 
-                            modalOverlay.style.display = "none";
-                            info_box.style.display = "none";
-                        }, 3000);
-                    }
-                    clearInterval(idInterval);
-                } else {
-                    areReviewsOffline = true;
-                }
-                let id_review;
-                reviews.forEach(function(review) {
-                    myWorker.postMessage(review);
-                    console.log('Message posted to worker');
-                    myWorker.addEventListener('message', function(e) {
-                        if(e.data >= 0) {
-                            DBHelper.deleteReviewsRestaurantOfflineValuesDatabase(e.data);
-                            console.log('Message received from worker: Added review');
-                        } else {
-                            console.log(e.data);
-                        }
-                    });
-                });
-            }
-        });
-    }
-    const idInterval = setInterval(AddReviewsOffline, 5000);
-}
