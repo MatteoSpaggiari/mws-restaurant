@@ -1,12 +1,13 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import threading
 import gzip
+import os
 from socketserver import ThreadingMixIn
 from urllib.parse import urlparse, parse_qs
 
 class WebServer(BaseHTTPRequestHandler):
     def do_GET(self):
-        rootdir = 'C:\wamp64\www\mws-restaurant\dist' #file location
+        rootdir = os.getcwd() #file location
 
         parts = urlparse(self.path)
 
